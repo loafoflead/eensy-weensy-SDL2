@@ -10,18 +10,20 @@ typedef struct list_element_ {
 	char name[50];
 } ListElement;
 
-int list_len(void);
+int list_len(ListElement* );
 
-void print_names(void);
+void print_names(ListElement* );
 
-ListElement* find_element(char *_name);
+ListElement* find_element(ListElement* , char *_name);
 
-void add_ent(Entity* new_ent, char* _name);
+void add_ent(ListElement* , Entity* new_ent, char* _name);
 
-void init_list_ent_ptr(Entity* e, char* _name);
+ListElement* init_list_ent_ptr(Entity* e, char* _name);
 
-void free_list(void);
+void free_list(ListElement* );
 
-ListElement** get_list_arr(void);
+ListElement** get_list_arr(ListElement* );
+
+void RenderCopyList(ListElement* first_ptr, SDL_Renderer* renderer);
 
 #endif

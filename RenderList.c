@@ -3,7 +3,7 @@
 
 #include "SDL2/SDL.h"
 
-static ListElement* first_ptr; /* ptr to first element in list */
+//static ListElement* first_ptr; /* ptr to first element in list */
 
 static ListElement* curr_ptr; /* Reusable ptr */
 
@@ -11,7 +11,7 @@ static int list_length = 0;
 
 
 
-int list_len(void) {
+int list_len(ListElement* first_ptr) {
 
 	int count = 0;
 	curr_ptr = first_ptr;
@@ -25,7 +25,7 @@ int list_len(void) {
 }
 
 /// NOTE: works
-void print_names(void) {
+void print_names(ListElement* first_ptr) {
 
 	curr_ptr = first_ptr;
 
@@ -36,7 +36,7 @@ void print_names(void) {
 
 }
 
-void free_list(void) {
+void free_list(ListElement* first_ptr) {
 
 	curr_ptr = first_ptr;
 	ListElement* temp_ptr;
@@ -51,7 +51,7 @@ void free_list(void) {
 
 }
 
-void RenderCopyList(SDL_Renderer* renderer) {
+void RenderCopyList(ListElement* first_ptr, SDL_Renderer* renderer) {
 
 	curr_ptr = first_ptr;
 
@@ -62,7 +62,7 @@ void RenderCopyList(SDL_Renderer* renderer) {
 
 }
 
-ListElement** get_list_arr(void) {
+ListElement** get_list_arr(ListElement* first_ptr) {
 
 	curr_ptr = first_ptr;
 
@@ -84,7 +84,7 @@ ListElement** get_list_arr(void) {
 
 }
 
-ListElement* find_element(char *_name) {
+ListElement* find_element(ListElement* first_ptr, char *_name) {
 
 	curr_ptr = first_ptr;
 
@@ -100,7 +100,7 @@ ListElement* find_element(char *_name) {
 }
 
 /// TODO: This does not work !!!!!
-void add_ent(Entity* new_ent, char* _name) {
+void add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
 
 	curr_ptr = first_ptr;
 
@@ -120,14 +120,16 @@ void add_ent(Entity* new_ent, char* _name) {
 
 }
 
-void init_list_ent_ptr(Entity* e, char* _name) {
+ListElement* init_list_ent_ptr(Entity* e, char* _name) {
 
-	first_ptr = (ListElement *) malloc(sizeof(ListElement));
+	ListElement* first_ptr = (ListElement *) malloc(sizeof(ListElement));
 	first_ptr->next_ptr = NULL;
 	first_ptr->ent_ptr = e;
 
 	strcpy(first_ptr->name, _name);
 
 	list_length ++;
+
+	return first_ptr;
 
 }

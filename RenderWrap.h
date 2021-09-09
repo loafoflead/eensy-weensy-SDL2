@@ -13,8 +13,6 @@ void quit_img();
 
 void draw_ent(Entity* ent_to_draw, SDL_Renderer* renderer);
 
-void RenderCopyList(SDL_Renderer* renderer);
-
 void set_ent_pos(Entity* ent, int new_x, int new_y);
 
 void set_ent_pos_point(Entity* ent, SDL_Point pt);

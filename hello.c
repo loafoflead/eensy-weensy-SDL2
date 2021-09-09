@@ -28,6 +28,8 @@ void handle_input(void);
 
 Entity* new_ent;
 
+ListElement* entity_list_1;
+
 int main() {
 
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -45,9 +47,9 @@ int main() {
 
 	new_ent = create_entity("png_test.png", renderer, 0, 0);
 
-	init_list_ent_ptr(new_ent, "new boy");
-	add_ent(create_entity("png_test_2.png", renderer, 0, 0), "next boy");
-	add_ent(create_entity("png_test_2.png", renderer, 80, 0), "next boy");
+	entity_list_1 = init_list_ent_ptr(new_ent, "new boy");
+	add_ent(entity_list_1, create_entity("png_test_2.png", renderer, 0, 0), "next boy");
+	add_ent(entity_list_1, create_entity("png_test_2.png", renderer, 80, 0), "next boy");
 
 	while (is_running) {
 		update_cycle();
@@ -57,7 +59,7 @@ int main() {
 
 	SDL_Quit();
 	quit_img();
-	free_list();
+	free_list(entity_list_1);
 
 	return(0);
 
@@ -77,7 +79,7 @@ void update_cycle(void) {
 		}
 	}
 
-	RenderCopyList(renderer);
+	RenderCopyList(entity_list_1, renderer);
 
 	SDL_RenderPresent(renderer);
 
