@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include "RenderWrap.h"
-#include "RenderList.h"
+#include "RenderList.h" 
 
 /*
 	NOTE: Compiler flags :))
@@ -49,7 +49,7 @@ int main() {
 
 	entity_list_1 = init_list_ent_ptr(new_ent, "new boy");
 	add_ent(entity_list_1, create_entity("png_test_2.png", renderer, 0, 0), "next boy");
-	add_ent(entity_list_1, create_entity("png_test_2.png", renderer, 80, 0), "next boy");
+	add_ent(entity_list_1, create_entity("png_test_2.png", renderer, 80, 0), "next boy2");
 
 	while (is_running) {
 		update_cycle();
@@ -80,6 +80,10 @@ void update_cycle(void) {
 	}
 
 	RenderCopyList(entity_list_1, renderer);
+
+	if (check_collision(new_ent, find_element(entity_list_1, "next boy")->ent_ptr) == SDL_TRUE) {
+		fprintf(stderr, "Collision found\n");
+	}
 
 	SDL_RenderPresent(renderer);
 

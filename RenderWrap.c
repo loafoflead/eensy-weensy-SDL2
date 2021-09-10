@@ -3,6 +3,56 @@
 
 #include "RenderWrap.h"
 
+
+
+SDL_bool check_collision(Entity* ent_a, Entity* ent_b) {
+
+	/* REF:
+	0				5
+  0 °---------------° 0
+	|				|
+	|				|
+	|				|
+  5 °---------------° 5
+	0				5
+	*/
+
+	SDL_Point temp_pt; /* NOTE: TOP LEFT */
+	temp_pt.x = ent_a->ent_rect->x;
+	temp_pt.y = ent_a->ent_rect->y;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		return SDL_TRUE;
+	}
+
+	/* NOTE: TOP RIGHT */
+	temp_pt.x = ent_a->ent_rect->x + ent_a->ent_rect->w;
+	temp_pt.y = ent_a->ent_rect->y;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		return SDL_TRUE;
+	}
+
+	/* NOTE: BOTTOM LEFT */
+	temp_pt.x = ent_a->ent_rect->x;
+	temp_pt.y = ent_a->ent_rect->y + ent_a->ent_rect->h;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		return SDL_TRUE;
+	}
+
+	/* NOTE: BOTTOM RIGHT */
+	temp_pt.x = ent_a->ent_rect->x + ent_a->ent_rect->w;
+	temp_pt.y = ent_a->ent_rect->y + ent_a->ent_rect->h;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		return SDL_TRUE;
+	}
+
+	return SDL_FALSE;
+
+}
+
 Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y) {
 
 	Entity* to_return = (Entity* ) malloc(sizeof(Entity));

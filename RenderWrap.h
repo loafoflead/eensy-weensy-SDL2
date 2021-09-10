@@ -11,6 +11,8 @@ typedef struct {
 int init_img();
 void quit_img();
 
+SDL_bool check_collision(Entity* ent_a, Entity* ent_b);
+
 void draw_ent(Entity* ent_to_draw, SDL_Renderer* renderer);
 
 void set_ent_pos(Entity* ent, int new_x, int new_y);

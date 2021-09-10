@@ -2,7 +2,7 @@
 #define RENDER_LIST_H value
 
 #include "RenderWrap.h"
-#include "SDL2/SDL.h"
+#include "SDL2/SDL.h" 
 
 typedef struct list_element_ {
 	Entity* ent_ptr;
@@ -10,7 +10,7 @@ typedef struct list_element_ {
 	char name[50];
 } ListElement;
 
-int list_len(ListElement* );
+int list_len(ListElement* ); 
 
 void print_names(ListElement* );
 
