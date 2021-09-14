@@ -1,5 +1,6 @@
 #include "RenderList.h"
 #include "RenderWrap.h"
+#include "general.h"
 
 #include "SDL2/SDL.h"
 
@@ -56,11 +57,18 @@ void RenderCopyList(ListElement* first_ptr, SDL_Renderer* renderer) {
 	curr_ptr = first_ptr;
 
 	while(curr_ptr != NULL) {
-		draw_ent(curr_ptr->ent_ptr, renderer);
+		if (curr_ptr->ent_ptr->hidden == SDL_FALSE) {
+			draw_ent(curr_ptr->ent_ptr, renderer);
+		}
+		if (curr_ptr->ent_ptr->run_behaviours == SDL_TRUE) {
+			run_behaviour(curr_ptr->ent_ptr, 0);
+		}
 		curr_ptr = curr_ptr->next_ptr;
 	}
 
 }
+
+
 
 ListElement** get_list_arr(ListElement* first_ptr) {
 
@@ -99,7 +107,7 @@ ListElement* find_element(ListElement* first_ptr, char *_name) {
 
 }
 
-/// TODO: This does not work !!!!!
+/// TODO: This does -n-o-t- WORKS :) !!!!!
 void add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
 
 	curr_ptr = first_ptr;
