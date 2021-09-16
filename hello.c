@@ -20,6 +20,13 @@
 	use the search bar.
 */
 
+/* NOTE: GAME VARIABLES */
+
+int world_x = 0;
+int world_y = 0;
+
+/* END */
+
 SDL_Window* window;
 SDL_Renderer* renderer;
 
@@ -29,12 +36,19 @@ SDL_bool is_running = SDL_TRUE;
 
 void update_cycle(void);
 void handle_input(void);
+void game_update(void);
+
+void update_world_elements(void);
 
 Entity* boy;
 
 ListElement* entity_list_1;
 
+ListElement* world_entity_list;
+
 int main() {
+
+	SDL_Point size;
 
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) {
 		fprintf(stderr, "Failed to start SDL.\n");
@@ -47,16 +61,17 @@ int main() {
 		exit(8);
 	}
 
+	SDL_GetWindowSize(window, &size.x, &size.y);
+
 	init_img();
 
-	boy = create_entity("boy_idle.png", renderer, 0, 0);
+	boy = create_entity("boy_idle.png", renderer, size.x / 2, size.y /2);
+	world_entity_list = init_list_ent_ptr(create_entity("earth.png", renderer, 0, 0), "ground");
 
 	entity_list_1 = init_list_ent_ptr(boy, "boy");
-	add_ent(entity_list_1, create_entity("earth.png", renderer, 0, 0), "ground");
+	add_ent(world_entity_list, create_entity("boy_jump.png", renderer, 0, 0), "\"tree\"");
 
-	
-
-	who_is(boy);
+	//who_is(boy);
 	
 	while (is_running) {
 		update_cycle();
@@ -89,6 +104,8 @@ void update_cycle(void) {
 		}
 	}
 
+	game_update();
+
 	RenderCopyList(entity_list_1, renderer);
 
 	/* TODO: REVISIT THIS!!!!!!!!!!!!! AAAAAAAAAAAAAA
@@ -101,6 +118,31 @@ void update_cycle(void) {
 
 }
 
+
+void game_update(void) {
+
+	update_world_elements();
+
+
+
+}
+
+
+void update_world_elements(void) {
+	ListElement** bg_list = get_list_arr(world_entity_list);
+
+	for(int i = 0; i < list_len(world_entity_list); i ++) {
+		//fprintf(stderr, "current_ent: %s\n", bg_list[i]->ent_ptr->texture_name);
+		set_ent_x(bg_list[i]->ent_ptr, 0 + world_x); 
+		set_ent_y(bg_list[i]->ent_ptr, 0 + world_y); 
+	}
+
+	RenderCopyList(world_entity_list, renderer);
+}
+
+
+
+
 void handle_input(void) {
 
 	switch(event.key.keysym.sym) {
@@ -110,15 +152,27 @@ void handle_input(void) {
 			break;
 
 		case SDLK_d:
-			move_x(boy, 5);
+			world_x += 10;
+			//move_x(boy, 5);
 			break;
 
 		case SDLK_q:
-			move_x(boy, -5);
+			world_x -= 10;
+			//move_x(boy, -5);
+			break;
+
+		case SDLK_z:
+			world_y -= 10;
+			//move_x(boy, -5);
+			break;
+
+		case SDLK_s:
+			world_y += 10;
+			//move_x(boy, -5);
 			break;
 
 		case SDLK_c:
-			set_ent_x(boy, 0);
+			//set_ent_x(boy, 0);
 			break;
 
 		case SDLK_r:
