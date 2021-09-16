@@ -3,18 +3,21 @@
 
 #include "SDL2/SDL.h"
 
+#define ENTITY_MAX_BEHAVIOURS 10
+
 typedef struct entity__ {
 	SDL_Texture* ent_texture;
 	char* texture_name;
 	SDL_Rect* ent_rect;
 	SDL_bool hidden;
-	SDL_bool run_behaviours;
+	/*SDL_bool run_behaviours;
 
-	int behaviour_count;
 
+	NOTE: something i gave up on
 	char **behaviour_names;
 	void (*behaviours[10])(struct entity__*, void*);
 	void (*arguments[10]);
+	*/
 } Entity ;
 
 // NOTE: init and exit funcs 
@@ -30,13 +33,13 @@ float lerp_float(float a, float b, float f);
 
 SDL_bool check_collision(Entity* ent_a, Entity* ent_b);
 
-/* 	
+/**	
 	NOTE: Rendering funcs 
 */
 
 void draw_ent(Entity* ent_to_draw, SDL_Renderer* renderer);
 
-/*
+/**
 	NOTE: Entity movement related funcs
 */
 
@@ -53,7 +56,7 @@ void set_ent_x(Entity* ent, int _x);
 void move_y(Entity* ent, int change);
 void move_x(Entity* ent, int change);
 
-/*
+/**
 	NOTE: Point manipulation funcs 
 */
 
@@ -62,7 +65,7 @@ void pt_minus(SDL_Point pt1, SDL_Point pt2);
 
 float dist_pt(SDL_Point a, SDL_Point b);
 
-/* 
+/** 
 	NOTE: Entity loading funcs 
 */
 
@@ -70,16 +73,16 @@ Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y);
 
 SDL_Texture* load_image(char *filename, SDL_Renderer *renderer);
 
-/*	
+/**	
 	NOTE: Behaviours (note, this is gonna get messy :/)
 */
 
-void add_behaviour(Entity* ent, void* func, void* args, char* );
+void add_behaviour(Entity* ent, void* func, int args, char* );
 void run_next_behaviour(Entity* ent); // NOTE: Limitations: only functions with an ent pointer at the start can 
 									  // be used.
 void run_behaviour(Entity* ent, int index);
 
-/* 
+/** 
 misc 
 */
 

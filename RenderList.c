@@ -60,9 +60,6 @@ void RenderCopyList(ListElement* first_ptr, SDL_Renderer* renderer) {
 		if (curr_ptr->ent_ptr->hidden == SDL_FALSE) {
 			draw_ent(curr_ptr->ent_ptr, renderer);
 		}
-		if (curr_ptr->ent_ptr->run_behaviours == SDL_TRUE) {
-			run_behaviour(curr_ptr->ent_ptr, 0);
-		}
 		curr_ptr = curr_ptr->next_ptr;
 	}
 

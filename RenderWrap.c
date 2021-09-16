@@ -5,44 +5,6 @@
 #include "RenderWrap.h"
 #include "general.h"
 
-void add_behaviour(Entity* ent, void* func, void* args, char* name) {
-	
-		ent->behaviour_names[0] = (char *) malloc(sizeof(name));
-		strcpy(ent->behaviour_names[0], name);
-		ent->behaviours[0] = func;
-		ent->arguments[0] = args;
-		ent->behaviour_count ++;
-	
-}
-
-void run_behaviour(Entity* ent, int index) {
-
-	if (ent->behaviours[index] == NULL) {
-		return;
-	}
-
-	(*ent->behaviours[index])(ent, ent->arguments[index]);
-
-}
-
-
-
-int index_of_latest = 0;
-
-void run_next_behaviour(Entity* ent) {
-
-	if (ent->behaviours[index_of_latest] == NULL) {
-		index_of_latest = 0;
-		return;
-	}
-
-	(*ent->behaviours[index_of_latest])(ent, ent->arguments[index_of_latest]);
-	index_of_latest ++;
-	if (ent->behaviours[index_of_latest] == NULL) {
-		index_of_latest = 0;
-	}
-
-}
 
 float lerp_float(float a, float b, float f) {
     return (a * (1.0f - f)) + (b * f);
@@ -119,6 +81,8 @@ Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y) {
 
 	Entity* to_return = (Entity* ) malloc(sizeof(Entity));
 
+	// NOTE: texture
+
 	SDL_RWops* rwop = SDL_RWFromFile(filename, "rb");
 	SDL_Surface *surface_ptr = IMG_LoadPNG_RW(rwop);
 
@@ -134,11 +98,13 @@ Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y) {
 		return NULL;
 	}
 
+	// NOTE: names
+
 	to_return-> texture_name = (char* ) malloc(sizeof(filename));
 
 	strcpy(to_return->texture_name, filename);
 
-	to_return->behaviour_names = (char **) malloc(sizeof(char *) * 10);
+	// NOTE: rects: boundary boxes
 
 	SDL_Rect* new_ent_rect = (SDL_Rect* ) malloc(sizeof(SDL_Rect));
 
@@ -150,9 +116,10 @@ Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y) {
 
 	to_return->ent_rect = new_ent_rect;
 
-	to_return->hidden = SDL_FALSE;
-	to_return->run_behaviours = SDL_TRUE;
-	to_return->behaviour_count = 0;
+	// NOTE: booleans
+
+	to_return->hidden = SDL_FALSE; //sets hidden to false (draws entity)
+
 
 	free(surface_ptr);
 	return to_return;
@@ -248,16 +215,5 @@ void who_is(Entity* ent) {
 	fprintf(stderr, "ent size: w:\033[1;31m%d\033[0m, h:\033[1;31m%d\033[0m\n", ent->ent_rect->w, ent->ent_rect->h);
 
 	fprintf(stderr, "ent hidden: \033[1;31m%d\033[0m\n", ent->hidden);
-	fprintf(stderr, "ent run behaviours: \033[1;31m%d\033[0m\n", ent->run_behaviours);
-
-	fprintf(stderr, "ent behaviour count: \033[1;31m%d\033[0m\n", ent->behaviour_count);
-
-	for (int i = 0; i < ent->behaviour_count; i ++) {
-		if (ent->behaviour_names[i] != NULL) {
-			fprintf(stderr, "[\033[1;31m%s\033[0m,]:", ent->behaviour_names[i], ent->arguments[i]);
-		}
-	}
-
-	fprintf(stderr, "\n\033[1;35m----------------------\033[0m\n");
-
+	
 }

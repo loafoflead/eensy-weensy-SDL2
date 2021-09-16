@@ -54,15 +54,14 @@ int main() {
 	entity_list_1 = init_list_ent_ptr(boy, "boy");
 	add_ent(entity_list_1, create_entity("earth.png", renderer, 0, 0), "ground");
 
-	int incr = 1;
+	
 
-	add_behaviour(boy, &move_x, &incr, "move");
-	boy->run_behaviours = SDL_FALSE;
-
+	who_is(boy);
+	
 	while (is_running) {
 		update_cycle();
-		who_is(boy);
-		SDL_Delay(1000);
+		//who_is(boy);
+		//SDL_Delay(1000);
 	}
 
 	SDL_Quit();
@@ -122,12 +121,19 @@ void handle_input(void) {
 			set_ent_x(boy, 0);
 			break;
 
+		case SDLK_r:
+			break;
+
+		case SDLK_u:
+			who_is(boy);
+			break;
+
 		case SDLK_a:
 			toggle_bool(&boy->hidden);
 			break;
 
 		case SDLK_p:
-
+			break;
 
 		default:
 			break;

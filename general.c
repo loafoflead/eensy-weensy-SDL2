@@ -4,6 +4,9 @@
 
 #include "SDL2/SDL.h"
 
+
+
+
 void toggle_bool(SDL_bool* boolean) {
 	if ((*boolean) == 0) {
 		*boolean = 1;
