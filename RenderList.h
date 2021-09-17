@@ -24,9 +24,11 @@ void free_list(ListElement* );
 
 ListElement** get_list_arr(ListElement* );
 
-void RenderCopyList(ListElement* first_ptr);
+void RenderCopyList(ListElement* );
 
-void RenderCopyListCenter(ListElement* first_ptr);
+void RenderCopyListCenter(ListElement* );
+
+int count_collisions(ListElement* );
 
 
 void debug_all(ListElement* first_ptr);

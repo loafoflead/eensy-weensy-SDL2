@@ -70,9 +70,12 @@ int main() {
 	world_entity_list = init_list_ent_ptr(create_entity("earth.png", 0, 0), "ground");
 
 	entity_list_1 = init_list_ent_ptr(boy, "boy");
-	add_ent(world_entity_list, create_entity("boy_jump.png", 0, 0), "\"tree\"");
+	add_ent(entity_list_1, create_entity("boy_jump.png", 0, 0), "\"tree\"");
 
 	//who_is(boy);
+
+	debug_all(world_entity_list);
+	debug_all(entity_list_1);
 	
 	while (is_running) {
 		update_cycle();
@@ -119,12 +122,15 @@ void update_cycle(void) {
 
 }
 
+int j = 0;
 
 void game_update(void) {
 
 	update_world_elements();
 
+	j = count_collisions(entity_list_1);
 
+	fprintf(stderr, "Collision count: %d\n", j);
 
 }
 
@@ -153,23 +159,23 @@ void handle_input(void) {
 			break;
 
 		case SDLK_d:
-			world_x += 10;
-			//move_x(boy, 5);
+			//world_x += 10;
+			move_x(boy, 5);
 			break;
 
 		case SDLK_q:
-			world_x -= 10;
-			//move_x(boy, -5);
+			//world_x -= 10;
+			move_x(boy, -5);
 			break;
 
 		case SDLK_z:
-			world_y -= 10;
-			//move_x(boy, -5);
+			//world_y -= 10;
+			move_x(boy, -5);
 			break;
 
 		case SDLK_s:
-			world_y += 10;
-			//move_x(boy, -5);
+			//world_y += 10;
+			move_x(boy, -5);
 			break;
 
 		case SDLK_c:

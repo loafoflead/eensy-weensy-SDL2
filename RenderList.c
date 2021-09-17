@@ -18,7 +18,7 @@ int count_collisions(ListElement* first_ptr) {
 	int collision_count = 0;
 
 	for(int i = 0; i < list_len(first_ptr); i ++) {
-		for (int j = 0; j < list_len(first_ptr); j ++) {
+		for (int j = i + 1; j < list_len(first_ptr); j ++) {
 
 			if (check_collision(list[i]->ent_ptr, list[j]->ent_ptr) == SDL_TRUE) {
 				collision_count ++;
