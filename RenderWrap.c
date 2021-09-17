@@ -128,7 +128,7 @@ Entity* create_entity(char *filename, int _x, int _y) {
 
 }
 
-void draw_ent(Entity* ent_to_draw) {
+void draw_ent_center(Entity* ent_to_draw) {
 
 	SDL_Rect rect_ptr = *ent_to_draw->ent_rect;
 
@@ -136,6 +136,12 @@ void draw_ent(Entity* ent_to_draw) {
 	rect_ptr.y -= (rect_ptr.h / 2);
 
 	SDL_RenderCopy(renderer, ent_to_draw->ent_texture, NULL, &rect_ptr);
+
+}
+
+void draw_ent(Entity* ent_to_draw) {
+
+	SDL_RenderCopy(renderer, ent_to_draw->ent_texture, NULL, ent_to_draw->ent_rect);
 
 }
 

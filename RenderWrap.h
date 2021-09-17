@@ -38,6 +38,7 @@ SDL_bool check_collision(Entity* ent_a, Entity* ent_b);
 */
 
 void draw_ent(Entity* ent_to_draw);
+void draw_ent_center(Entity* ent_to_draw);
 int replace_sprite(Entity* , char* );
 
 /**

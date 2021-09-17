@@ -26,4 +26,6 @@ ListElement** get_list_arr(ListElement* );
 
 void RenderCopyList(ListElement* first_ptr);
 
+void RenderCopyListCenter(ListElement* first_ptr);
+
 #endif

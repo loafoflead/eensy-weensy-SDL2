@@ -65,6 +65,18 @@ void RenderCopyList(ListElement* first_ptr) {
 
 }
 
+void RenderCopyListCenter(ListElement* first_ptr) {
+
+	curr_ptr = first_ptr;
+
+	while(curr_ptr != NULL) {
+		if (curr_ptr->ent_ptr->hidden == SDL_FALSE) {
+			draw_ent_center(curr_ptr->ent_ptr);
+		}
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+}
 
 
 ListElement** get_list_arr(ListElement* first_ptr) {
