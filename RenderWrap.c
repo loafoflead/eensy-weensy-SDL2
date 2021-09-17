@@ -79,6 +79,54 @@ SDL_bool check_collision(Entity* ent_a, Entity* ent_b) {
 
 }
 
+Collision get_collision(Entity* ent_a, Entity* ent_b) {
+
+	Collision col = {NULL, NULL, {0, 0}};
+
+	SDL_Point temp_pt; /* NOTE: TOP LEFT */
+	temp_pt.x = ent_a->ent_rect->x;
+	temp_pt.y = ent_a->ent_rect->y;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		col.a = ent_a;
+		col.b = ent_b;
+		col.collision_point = temp_pt;
+	}
+
+	/* NOTE: TOP RIGHT */
+	temp_pt.x = ent_a->ent_rect->x + ent_a->ent_rect->w;
+	temp_pt.y = ent_a->ent_rect->y;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		col.a = ent_a;
+		col.b = ent_b;
+		col.collision_point = temp_pt;
+	}
+
+	/* NOTE: BOTTOM LEFT */
+	temp_pt.x = ent_a->ent_rect->x;
+	temp_pt.y = ent_a->ent_rect->y + ent_a->ent_rect->h;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		col.a = ent_a;
+		col.b = ent_b;
+		col.collision_point = temp_pt;
+	}
+
+	/* NOTE: BOTTOM RIGHT */
+	temp_pt.x = ent_a->ent_rect->x + ent_a->ent_rect->w;
+	temp_pt.y = ent_a->ent_rect->y + ent_a->ent_rect->h;
+
+	if (SDL_PointInRect(&temp_pt, ent_b->ent_rect) == SDL_TRUE) {
+		col.a = ent_a;
+		col.b = ent_b;
+		col.collision_point = temp_pt;
+	}
+
+	return col;
+	
+}
+
 Entity* create_entity(char *filename, int _x, int _y) {
 
 	Entity* to_return = (Entity* ) malloc(sizeof(Entity));
@@ -299,5 +347,6 @@ void who_is(Entity* ent) {
 	fprintf(stderr, "ent size: w:\033[1;31m%d\033[0m, h:\033[1;31m%d\033[0m\n", ent->ent_rect->w, ent->ent_rect->h);
 
 	fprintf(stderr, "ent hidden: \033[1;31m%d\033[0m\n", ent->hidden);
+	fprintf(stderr, "ent debugged: \033[1;31m%d\033[0m\n", ent->debug);
 	
 }

@@ -8,6 +8,8 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 
+#define CLS() printf("\033[H\033[J")
+
 /*
 	NOTE: Compiler flags :))
 	-lSDL2_image 
@@ -38,6 +40,8 @@ void update_cycle(void);
 void handle_input(void);
 void game_update(void);
 
+void readouts(void);
+
 void update_world_elements(void);
 
 Entity* boy;
@@ -66,11 +70,15 @@ int main() {
 
 	init_img(renderer);
 
+	fprintf(stderr, "\n\n\n\n\n\n\n\n\n");
+	CLS();
+
 	boy = create_entity("boy_idle.png", size.x / 2, size.y /2);
 	world_entity_list = init_list_ent_ptr(create_entity("earth.png", 0, 0), "ground");
 
 	entity_list_1 = init_list_ent_ptr(boy, "boy");
-	add_ent(entity_list_1, create_entity("boy_jump.png", 0, 0), "\"tree\"");
+	add_ent(world_entity_list, create_entity("boy_jump.png", 0, 0), "\"tree\"");
+	add_ent(world_entity_list, create_entity("boy_jump.png", 100, 0), "\"tree2\"");
 
 	//who_is(boy);
 
@@ -128,20 +136,34 @@ void game_update(void) {
 
 	update_world_elements();
 
-	j = count_collisions(entity_list_1);
+	if (check_collision(find_element(world_entity_list, "\"tree\"")->ent_ptr, boy) == SDL_TRUE) {
+		//fprintf(stderr, "col\n");
+		//remove_element(world_entity_list, find_element(world_entity_list, "\"tree\""));
+	}
 
-	fprintf(stderr, "Collision count: %d\n", j);
+	readouts();
 
 }
 
+void readouts(void) {
+
+	go_to(0, 0);
+	fprintf(stderr, "*---------------------------------------------*\n");
+	fprintf(stderr, "*- --------world_x: %d -- world_y: %d------- -*\n", world_x, world_y);
+	fprintf(stderr, "*- 				   LISTS		     	  -*\n");
+	fprintf(stderr, "*- entity_list_1: ");
+	print_names(entity_list_1);
+	fprintf(stderr, "*---------------------------------------------*\n");
+
+}
 
 void update_world_elements(void) {
 	ListElement** bg_list = get_list_arr(world_entity_list);
 
 	for(int i = 0; i < list_len(world_entity_list); i ++) {
 		//fprintf(stderr, "current_ent: %s\n", bg_list[i]->ent_ptr->texture_name);
-		set_ent_x(bg_list[i]->ent_ptr, 0 + world_x); 
-		set_ent_y(bg_list[i]->ent_ptr, 0 + world_y); 
+		set_ent_x(bg_list[i]->ent_ptr, bg_list[i]->ent_ptr->ent_rect->x + world_x); 
+		set_ent_y(bg_list[i]->ent_ptr, bg_list[i]->ent_ptr->ent_rect->y + world_y); 
 	}
 
 	RenderCopyList(world_entity_list);
@@ -159,23 +181,23 @@ void handle_input(void) {
 			break;
 
 		case SDLK_d:
-			//world_x += 10;
-			move_x(boy, 5);
+			world_x += 10;
+			//move_x(boy, 5);
 			break;
 
 		case SDLK_q:
-			//world_x -= 10;
-			move_x(boy, -5);
+			world_x -= 10;
+			//move_x(boy, -5);
 			break;
 
 		case SDLK_z:
-			//world_y -= 10;
-			move_x(boy, -5);
+			world_y -= 10;
+			//move_x(boy, -5);
 			break;
 
 		case SDLK_s:
-			//world_y += 10;
-			move_x(boy, -5);
+			world_y += 10;
+			//move_x(boy, -5);
 			break;
 
 		case SDLK_c:

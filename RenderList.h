@@ -18,6 +18,8 @@ ListElement* find_element(ListElement* , char *_name);
 
 void add_ent(ListElement* , Entity* new_ent, char* _name);
 
+void remove_element(ListElement* first_ptr, ListElement* el_ptr);
+
 ListElement* init_list_ent_ptr(Entity* e, char* _name);
 
 void free_list(ListElement* );

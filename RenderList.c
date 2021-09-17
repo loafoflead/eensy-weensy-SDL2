@@ -206,6 +206,34 @@ void add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
 
 }
 
+void remove_element(ListElement* first_ptr, ListElement* el_ptr) {
+
+	if(el_ptr == NULL) {
+		return;
+	}
+
+	if(first_ptr == NULL) {
+		return;
+	}
+
+	curr_ptr = first_ptr;
+
+	if (curr_ptr == el_ptr) {
+		return;
+	}
+
+	while(curr_ptr != NULL) {
+		if (curr_ptr->next_ptr == el_ptr) {
+			break;
+		}
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+	curr_ptr->next_ptr = el_ptr->next_ptr;
+	free(el_ptr);
+
+}
+
 ListElement* init_list_ent_ptr(Entity* e, char* _name) {
 
 	ListElement* first_ptr = (ListElement *) malloc(sizeof(ListElement));

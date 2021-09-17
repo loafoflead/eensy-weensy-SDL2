@@ -5,7 +5,10 @@
 #include "SDL2/SDL.h"
 
 
-
+void go_to(int x, int y) {
+	printf("\033[%d;%dH", x, y);
+	fflush(stdout);
+}
 
 void toggle_bool(SDL_bool* boolean) {
 	if ((*boolean) == 0) {

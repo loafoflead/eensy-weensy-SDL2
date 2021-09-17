@@ -3,8 +3,6 @@
 
 #include "SDL2/SDL.h"
 
-#define ENTITY_MAX_BEHAVIOURS 10
-
 typedef struct entity__ {
 	SDL_Texture* ent_texture;
 	char* texture_name;
@@ -22,7 +20,11 @@ typedef struct entity__ {
 	*/
 } Entity ;
 
-
+typedef struct collision__ {
+	Entity* a;
+	Entity* b;
+	SDL_Point collision_point;
+} Collision;
 
 // NOTE: init and exit funcs 
 
@@ -38,6 +40,7 @@ float lerp_float(float a, float b, float f);
 */
 
 SDL_bool check_collision(Entity* ent_a, Entity* ent_b);
+Collision get_collision(Entity* ent_a, Entity* ent_b);
 
 /**	
 	NOTE: Rendering funcs 
