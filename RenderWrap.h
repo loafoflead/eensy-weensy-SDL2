@@ -22,7 +22,7 @@ typedef struct entity__ {
 
 // NOTE: init and exit funcs 
 
-int init_img();
+int init_img(SDL_Renderer* renderer);
 void quit_img();
 
 float lerp_float(float a, float b, float f);
@@ -37,7 +37,8 @@ SDL_bool check_collision(Entity* ent_a, Entity* ent_b);
 	NOTE: Rendering funcs 
 */
 
-void draw_ent(Entity* ent_to_draw, SDL_Renderer* renderer);
+void draw_ent(Entity* ent_to_draw);
+int replace_sprite(Entity* , char* );
 
 /**
 	NOTE: Entity movement related funcs
@@ -69,9 +70,9 @@ float dist_pt(SDL_Point a, SDL_Point b);
 	NOTE: Entity loading funcs 
 */
 
-Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y);
+Entity* create_entity(char *filename, int _x, int _y);
 
-SDL_Texture* load_image(char *filename, SDL_Renderer *renderer);
+SDL_Texture* load_image(char *filename);
 
 /**	
 	NOTE: Behaviours (note, this is gonna get messy :/)

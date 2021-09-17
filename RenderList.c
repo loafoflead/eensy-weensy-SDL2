@@ -52,13 +52,13 @@ void free_list(ListElement* first_ptr) {
 
 }
 
-void RenderCopyList(ListElement* first_ptr, SDL_Renderer* renderer) {
+void RenderCopyList(ListElement* first_ptr) {
 
 	curr_ptr = first_ptr;
 
 	while(curr_ptr != NULL) {
 		if (curr_ptr->ent_ptr->hidden == SDL_FALSE) {
-			draw_ent(curr_ptr->ent_ptr, renderer);
+			draw_ent(curr_ptr->ent_ptr);
 		}
 		curr_ptr = curr_ptr->next_ptr;
 	}

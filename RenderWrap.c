@@ -5,6 +5,8 @@
 #include "RenderWrap.h"
 #include "general.h"
 
+SDL_Renderer* renderer;
+
 
 float lerp_float(float a, float b, float f) {
     return (a * (1.0f - f)) + (b * f);
@@ -77,7 +79,7 @@ SDL_bool check_collision(Entity* ent_a, Entity* ent_b) {
 
 }
 
-Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y) {
+Entity* create_entity(char *filename, int _x, int _y) {
 
 	Entity* to_return = (Entity* ) malloc(sizeof(Entity));
 
@@ -126,9 +128,33 @@ Entity* create_entity(char *filename, SDL_Renderer* renderer, int _x, int _y) {
 
 }
 
-void draw_ent(Entity* ent_to_draw, SDL_Renderer* renderer) {
+void draw_ent(Entity* ent_to_draw) {
 
-	SDL_RenderCopy(renderer, ent_to_draw->ent_texture, NULL, ent_to_draw->ent_rect);
+	SDL_Rect rect_ptr = *ent_to_draw->ent_rect;
+
+	rect_ptr.x -= (rect_ptr.w / 2);
+	rect_ptr.y -= (rect_ptr.h / 2);
+
+	SDL_RenderCopy(renderer, ent_to_draw->ent_texture, NULL, &rect_ptr);
+
+}
+
+int replace_sprite(Entity* ent, char* filename) {
+
+	if (strcmp(ent->texture_name, filename) == 0) {
+		return 2;
+	}
+
+	SDL_Texture* new_texture = load_image(filename);
+
+	if(new_texture == NULL) {
+		return 1;
+	}
+
+	ent->ent_texture = new_texture;
+	strcpy(ent->texture_name, filename);
+	fprintf(stderr, "texture replaced\n");
+	return 0;
 
 }
 
@@ -166,7 +192,7 @@ void move_y(Entity* ent, int change) {
 	ent->ent_rect->y += change;
 }
 
-int init_img(void) {
+int init_img(SDL_Renderer* renderer) {
 	int flags = IMG_INIT_PNG;
 	int result = IMG_Init(0);
 	if (result != 0) {
@@ -181,7 +207,7 @@ void quit_img(void) {
 	IMG_Quit();
 }
 
-SDL_Texture* load_image(char *filename, SDL_Renderer *renderer) {
+SDL_Texture* load_image(char *filename) {
 
 	SDL_RWops* rwop = SDL_RWFromFile(filename, "rb");
 	SDL_Surface *surface_ptr = IMG_LoadPNG_RW(rwop);

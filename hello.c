@@ -61,15 +61,16 @@ int main() {
 		exit(8);
 	}
 
-	SDL_GetWindowSize(window, &size.x, &size.y);
+	SDL_GetWindowSize(window, &size.x, &size.y); // TODO: Figure out how to make the "center" of sprites not
+												 // be the top left <3 much love good luck
 
-	init_img();
+	init_img(renderer);
 
-	boy = create_entity("boy_idle.png", renderer, size.x / 2, size.y /2);
-	world_entity_list = init_list_ent_ptr(create_entity("earth.png", renderer, 0, 0), "ground");
+	boy = create_entity("boy_idle.png", size.x / 2, size.y /2);
+	world_entity_list = init_list_ent_ptr(create_entity("earth.png", 0, 0), "ground");
 
 	entity_list_1 = init_list_ent_ptr(boy, "boy");
-	add_ent(world_entity_list, create_entity("boy_jump.png", renderer, 0, 0), "\"tree\"");
+	add_ent(world_entity_list, create_entity("boy_jump.png", 0, 0), "\"tree\"");
 
 	//who_is(boy);
 	
@@ -106,7 +107,7 @@ void update_cycle(void) {
 
 	game_update();
 
-	RenderCopyList(entity_list_1, renderer);
+	RenderCopyList(entity_list_1);
 
 	/* TODO: REVISIT THIS!!!!!!!!!!!!! AAAAAAAAAAAAAA
 	if (lerpp == SDL_TRUE && it < 101) {
@@ -137,7 +138,7 @@ void update_world_elements(void) {
 		set_ent_y(bg_list[i]->ent_ptr, 0 + world_y); 
 	}
 
-	RenderCopyList(world_entity_list, renderer);
+	RenderCopyList(world_entity_list);
 }
 
 
@@ -172,10 +173,11 @@ void handle_input(void) {
 			break;
 
 		case SDLK_c:
-			//set_ent_x(boy, 0);
+			replace_sprite(boy, "boy_idle.png");
 			break;
 
 		case SDLK_r:
+			replace_sprite(boy, "boy_jump.png");
 			break;
 
 		case SDLK_u:

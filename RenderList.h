@@ -24,6 +24,6 @@ void free_list(ListElement* );
 
 ListElement** get_list_arr(ListElement* );
 
-void RenderCopyList(ListElement* first_ptr, SDL_Renderer* renderer);
+void RenderCopyList(ListElement* first_ptr);
 
 #endif
