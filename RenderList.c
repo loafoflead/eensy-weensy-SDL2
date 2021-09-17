@@ -11,6 +11,26 @@ static ListElement* curr_ptr; /* Reusable ptr */
 static int list_length = 0;
 
 
+int count_collisions(ListElement* first_ptr) {
+
+	ListElement** list = get_list_arr(first_ptr);
+
+	int collision_count = 0;
+
+	for(int i = 0; i < list_len(first_ptr); i ++) {
+		for (int j = 0; j < list_len(first_ptr); j ++) {
+
+			if (check_collision(list[i]->ent_ptr, list[j]->ent_ptr) == SDL_TRUE) {
+				collision_count ++;
+			}
+
+		}
+	}
+
+	return collision_count;
+
+}
+
 
 int list_len(ListElement* first_ptr) {
 
@@ -52,6 +72,51 @@ void free_list(ListElement* first_ptr) {
 
 }
 
+void hide_all(ListElement* first_ptr) {
+
+	curr_ptr = first_ptr;
+
+	while(curr_ptr != NULL) {
+		curr_ptr->ent_ptr->hidden = SDL_TRUE;
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+}
+
+void show_all(ListElement* first_ptr) {
+
+	curr_ptr = first_ptr;
+
+	while(curr_ptr != NULL) {
+		curr_ptr->ent_ptr->hidden = SDL_FALSE;
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+}
+
+void debug_all(ListElement* first_ptr) {
+
+	curr_ptr = first_ptr;
+
+	while(curr_ptr != NULL) {
+		curr_ptr->ent_ptr->debug = SDL_TRUE;
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+}
+
+void un_debug_all(ListElement* first_ptr) {
+
+	curr_ptr = first_ptr;
+
+	while(curr_ptr != NULL) {
+		curr_ptr->ent_ptr->debug = SDL_FALSE;
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+}
+
+
 void RenderCopyList(ListElement* first_ptr) {
 
 	curr_ptr = first_ptr;
@@ -60,6 +125,8 @@ void RenderCopyList(ListElement* first_ptr) {
 		if (curr_ptr->ent_ptr->hidden == SDL_FALSE) {
 			draw_ent(curr_ptr->ent_ptr);
 		}
+		if (curr_ptr->ent_ptr->debug == SDL_TRUE) 
+				draw_debug(curr_ptr->ent_ptr);
 		curr_ptr = curr_ptr->next_ptr;
 	}
 
@@ -73,6 +140,8 @@ void RenderCopyListCenter(ListElement* first_ptr) {
 		if (curr_ptr->ent_ptr->hidden == SDL_FALSE) {
 			draw_ent_center(curr_ptr->ent_ptr);
 		}
+		if (curr_ptr->ent_ptr->debug == SDL_TRUE) 
+				draw_debug(curr_ptr->ent_ptr);
 		curr_ptr = curr_ptr->next_ptr;
 	}
 

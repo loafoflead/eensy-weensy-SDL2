@@ -28,4 +28,11 @@ void RenderCopyList(ListElement* first_ptr);
 
 void RenderCopyListCenter(ListElement* first_ptr);
 
+
+void debug_all(ListElement* first_ptr);
+void un_debug_all(ListElement* first_ptr);
+
+void show_all(ListElement* first_ptr);
+void hide_all(ListElement* first_ptr);
+
 #endif

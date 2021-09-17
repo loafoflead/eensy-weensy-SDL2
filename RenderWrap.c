@@ -121,7 +121,7 @@ Entity* create_entity(char *filename, int _x, int _y) {
 	// NOTE: booleans
 
 	to_return->hidden = SDL_FALSE; //sets hidden to false (draws entity)
-
+	to_return->debug = SDL_FALSE; // sets debug to false (draws hitbox)
 
 	free(surface_ptr);
 	return to_return;
@@ -142,6 +142,34 @@ void draw_ent_center(Entity* ent_to_draw) {
 void draw_ent(Entity* ent_to_draw) {
 
 	SDL_RenderCopy(renderer, ent_to_draw->ent_texture, NULL, ent_to_draw->ent_rect);
+
+}
+
+SDL_Point debug_points[5];
+
+void draw_debug(Entity* ent) {
+
+	SDL_Point tempo = {get_x(ent), get_y(ent)};  /* *------| */
+	debug_points[0] = tempo;
+
+	tempo.x = get_x(ent) + get_width(ent);		 /* |------* */
+	tempo.y = get_y(ent);
+	debug_points[1] = tempo;
+
+	tempo.x = get_x(ent) + get_width(ent);		 /* |------* (down) */
+	tempo.y = get_y(ent) + get_height(ent);
+	debug_points[2] = tempo;
+
+	tempo.x = get_x(ent);
+	tempo.y = get_y(ent) + get_height(ent);
+	debug_points[3] = tempo;
+
+	tempo.x = get_x(ent);		 /* |------* */
+	tempo.y = get_y(ent);
+	debug_points[4] = tempo;
+
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLines(renderer, debug_points, 5);
 
 }
 
@@ -170,6 +198,30 @@ int get_x(Entity* ent) {
 
 int get_y(Entity* ent) {
 	return ent->ent_rect->y;
+}
+
+int get_width(Entity* ent) {
+	return ent->ent_rect->w;
+}
+
+int get_height(Entity* ent) {
+	return ent->ent_rect->h;
+}
+
+void set_height(Entity* ent, int value) {
+	ent->ent_rect->h = value;
+}
+
+void set_width(Entity* ent, int value) {
+	ent->ent_rect->w = value;
+}
+
+void change_height(Entity* ent, int value) {
+	ent->ent_rect->h += value;
+}
+
+void change_width(Entity* ent, int value) {
+	ent->ent_rect->w += value;
 }
 
 void set_ent_x(Entity* ent, int _x) {

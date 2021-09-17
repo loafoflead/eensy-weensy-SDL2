@@ -188,6 +188,10 @@ void handle_input(void) {
 			toggle_bool(&boy->hidden);
 			break;
 
+		case SDLK_t:
+			toggle_bool(&boy->debug);
+			break;
+
 		case SDLK_p:
 			break;
 
