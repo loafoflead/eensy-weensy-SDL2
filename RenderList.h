@@ -101,7 +101,7 @@ Entity* get_ent(ListElement* first_ptr, char* _name);
 *			Name to give the new list entry.								*
 *																			*
 ****************************************************************************/
-void add_ent(ListElement* , Entity* new_ent, char* _name);
+ListElement* add_ent(ListElement* , Entity* new_ent, char* _name);
 
 
 /****************************************************************************

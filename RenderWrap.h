@@ -35,6 +35,12 @@ typedef struct entity__ {
 	/// @NOTE: Whether the sprite's debug box is drawn on a render pass
 	SDL_bool debug;
 	
+	/// @note: whether or not to run the optional function attatched to the entity
+	SDL_bool run_actions;
+	
+	/// @note: optional func to run each update cycle 
+	void (*action)(void *);
+	
 } Entity ;
 
 typedef struct SDLPLUS_Drawable {
@@ -184,6 +190,12 @@ void destroy_entity(Entity* ent);
 /**	
 	@NOTE: Behaviours (note, this is gonna get messy :/)
 */
+
+void set_action(Entity* ent, void (*func)(void *));
+void run_action(Entity* ent, void *args);
+void remove_action(Entity* ent);
+
+/* old */
 
 void add_behaviour(Entity* ent, void* func, int args, char* );
 void run_next_behaviour(Entity* ent); // NOTE: Limitations: only functions with an ent pointer at the start can 

@@ -9,6 +9,25 @@ SDL_Point debug_points[5]; /* debug points used to draw hitboxes */
 
 Collision collision_object_static; /* reusable collision object */
 
+void set_action(Entity* ent, void (*func)(void *)) {
+	ent->action = func;
+	ent->run_actions = SDL_TRUE;
+}
+
+void remove_action(Entity* ent) {
+	ent->run_actions = SDL_FALSE;
+	ent->action = NULL;
+}
+
+void run_action(Entity* ent, void* args) {
+	if (ent->action == NULL) 
+		return;
+	fprintf(stderr, "tried to run an action\n");
+	ent->action(args);
+}
+
+
+
 float lerp_float(float a, float b, float f) {
     return (a * (1.0f - f)) + (b * f);
 }
@@ -210,6 +229,7 @@ Entity* create_entity(char *filename, int _x, int _y) {
 
 	to_return->hidden = SDL_FALSE; //sets hidden to false (draws entity)
 	to_return->debug = SDL_FALSE; // sets debug to false (draws hitbox)
+	to_return->run_actions = SDL_FALSE; // sets actions to false (running extra behaviours)
 
 	free(surface_ptr);
 	return to_return;

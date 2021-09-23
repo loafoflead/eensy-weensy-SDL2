@@ -226,7 +226,11 @@ void update_all(ListElement* first) {
 	curr_ptr = first;
 	
 	while(curr_ptr != NULL) {
+		if (curr_ptr->ent_ptr == NULL) 
+			continue;
 		update_ent(curr_ptr->ent_ptr);
+		if(curr_ptr->ent_ptr->run_actions == SDL_TRUE)
+			run_action(curr_ptr->ent_ptr, curr_ptr->ent_ptr);
 		curr_ptr = curr_ptr->next_ptr;
 	}
 	
@@ -332,7 +336,7 @@ Entity* get_ent(ListElement* first_ptr, char* _name) {
 }
 
 /// TODO: This does -n-o-t- WORKS :) !!!!!
-void add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
+ListElement* add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
 
 	curr_ptr = first_ptr;
 
@@ -347,6 +351,8 @@ void add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
 	strcpy(new_ptr->name, _name);
 
 	curr_ptr->next_ptr = new_ptr;
+	
+	return new_ptr;
 
 }
 

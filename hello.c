@@ -30,6 +30,23 @@
 int world_x = 0;
 int world_y = 0;
 
+
+
+void run(void* entt) {
+	
+	fprintf(stderr, "hi\n");
+	Entity* ent = entt;
+	if (ent == NULL) 
+		return;
+	
+	fprintf(stderr, "got me ent\n");
+	
+	for (int i = 0; i < 10; i ++)
+		lerp(ent, get_x(ent) + 60, get_y(ent), 10);
+	
+	remove_action(ent);
+}
+
 /* END */
 
 SDL_Window* window;
@@ -57,7 +74,7 @@ void update_world_elements(void);
 /** @NOTE: Variable declarations **/
 
 Entity* boy;
-Entity* text_1;
+Entity* pear;
 
 SDL_Point size;
 
@@ -136,19 +153,17 @@ void initialise_entities(void) {
 	entities = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
 	boy = find_element(entities, "boy")->ent_ptr;
 	
-	add_ent(entities, create_entity("earth.png", 0, 100), "ground");
+	add_ent(entities, create_entity("pear.png", 0, 0), "pear");
+	pear = get_ent(entities, "pear");
 	
-	add_ent(entities, create_entity("tree1.png", get_x(index_ls(entities, 1)->ent_ptr), get_y(index_ls(entities, 1)->ent_ptr) + 100), "\"tree\"");
-	add_ent(entities, create_entity("tree1.png", get_x(index_ls(entities, 1)->ent_ptr) + 500, get_y(index_ls(entities, 1)->ent_ptr) + 100), "\"tree2\"");
-	
-	background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds_background");
+	background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds");
 	
 }
 
 void game_update(void) {
 
 	RenderCopyListCenter(background);
-	update_ent(boy);
+	update_all(entities);
 
 	set_ent_pos(index_ls(background, 0)->ent_ptr, get_x(boy) / 10, get_y(boy) / 10);
 
@@ -171,6 +186,8 @@ void update_world_elements(void) {
 	
 	
 }
+
+Entity* temp;
 
 void handle_input(void) {
 
@@ -207,9 +224,9 @@ void handle_input(void) {
 			break;
 			
 		case SDLK_SPACE:
-			point = save_ent_pos(boy);
-			lerp(boy, get_x(boy), get_y(boy) + 80, 5);
-			lerp(boy, point.x, point.y, 5);
+			temp = add_ent(entities, create_entity("pear.png", get_x(boy), get_y(boy)), "pear_todie")->ent_ptr;
+			//set_speed(temp, 10.5f); 
+			set_action(temp, &run);
 			break;
 			
 		case SDLK_c: /* center */
