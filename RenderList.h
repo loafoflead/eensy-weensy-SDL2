@@ -32,7 +32,7 @@ Collision** get_collisions(ListElement* first_ptr);
 *	stores the collision info in a provided array							*
 *																			*
 ****************************************************************************/
-void get_collisions_toarray(ListElement* first_ptr, Collision** collision_array_pointer);
+void get_collisions_toarray(ListElement* first_ptr, Collision* collision_array_pointer);
 
 /****************************************************************************
 *	@NOTE:																	*
@@ -80,6 +80,8 @@ void print_names(ListElement* );
 *																			*
 ****************************************************************************/
 ListElement* find_element(ListElement* , char *_name);
+
+ListElement* index_ls(ListElement* first_ptr, int index);
 
 /// @note: similar to the above function, only it directly returns the ent
 Entity* get_ent(ListElement* first_ptr, char* _name);
@@ -243,6 +245,16 @@ void hide_all(ListElement* first_ptr);
 ****************************************************************************/
 void move_all(ListElement* first_ptr, int _x, int _y);
 void set_all(ListElement* first_ptr, int _x, int _y);
+void lerp_all(ListElement* first, int _x, int _y, int);
+void lerp_all_local_offset(ListElement* first, int _x, int _y, int);
+
+
+/****************************************************************************
+*																			*
+*	@note: applies 'update_ent()' func to all elements in a list.			*
+*																			*
+****************************************************************************/
+void update_all(ListElement* first);
 
 /**
 	@func: copies one list to another

@@ -1,6 +1,7 @@
 #include "RenderList.h"
 #include "RenderWrap.h"
 #include "general.h"
+#include "animations.h"
 
 #include "SDL2/SDL.h"
 
@@ -9,6 +10,7 @@ static ListElement** temp_list; /* reusable ptr list */
 
 Collision** collision_list; /** @note: collision list **/
 
+/** @warn: neither of these funcs work, to re-do **/
 Collision** get_collisions(ListElement* first_ptr) {
 	
 	if (first_ptr == NULL) 
@@ -33,27 +35,43 @@ Collision** get_collisions(ListElement* first_ptr) {
 	
 }
 
-void get_collisions_toarray(ListElement* first_ptr, Collision** collision_array_pointer) {
+void get_collisions_toarray(ListElement* first_ptr, Collision* collision_array_pointer) {
+	
+	if (collision_array_pointer == NULL) {
+		fprintf(stderr, "tried to fill a null array with collisions.\n");	
+		return;
+	}
+	
+	fprintf(stderr, "length: %d\n", list_len(first_ptr));
 	
 	temp_list = get_list_arr(first_ptr);
 	
 	for(int i = 0; i < list_len(first_ptr); i ++) {
 		
-		if (i = (sizeof(collision_array_pointer) / sizeof(collision_array_pointer[0])) - 1) {
+		fprintf(stderr, "Running collision loop.\n");	
+		
+		if (i == (sizeof(collision_array_pointer) / sizeof(collision_array_pointer[0])) - 1) {
+			fprintf(stderr, "Reached the end of the array.\n");	
 			break ;
 		}
 		
 		for (int j = i + 1; j < list_len(first_ptr); j ++) {
+			
+			fprintf(stderr, "Running second collision loop.\n");	
 
 			if (check_collision(temp_list[i]->ent_ptr, temp_list[j]->ent_ptr) == SDL_TRUE) {
-				get_collision_obj(temp_list[i]->ent_ptr, temp_list[j]->ent_ptr, (*collision_array_pointer + i));
+				fprintf(stderr, "Collision found!\n");	
+				fflush(stdout);
+				get_collision_obj(temp_list[i]->ent_ptr, temp_list[j]->ent_ptr, &collision_array_pointer[i]);
 			}
+			
+			fprintf(stderr, "Collision not found.\n");	
 
 		}
 	}
 	
 }
-	
+/**											    **/
 
 int count_collisions(ListElement* first_ptr) {
 
@@ -183,6 +201,36 @@ void move_all(ListElement* first_ptr, int _x, int _y) {
 
 }
 
+void lerp_all(ListElement* first, int _x, int _y, int ti) {
+	
+	curr_ptr = first;
+
+	while(curr_ptr != NULL) {
+		lerp(curr_ptr->ent_ptr, _x, _y, ti);
+		curr_ptr = curr_ptr->next_ptr;
+	}
+	
+}
+
+void lerp_all_local_offset(ListElement* first, int _x, int _y, int ti) {
+	curr_ptr = first;
+
+	while(curr_ptr != NULL) {
+		lerp(curr_ptr->ent_ptr, _x + get_x(curr_ptr->ent_ptr), _y + get_y(curr_ptr->ent_ptr), ti);
+		curr_ptr = curr_ptr->next_ptr;
+	}
+	
+}
+
+void update_all(ListElement* first) {
+	curr_ptr = first;
+	
+	while(curr_ptr != NULL) {
+		update_ent(curr_ptr->ent_ptr);
+		curr_ptr = curr_ptr->next_ptr;
+	}
+	
+}
 
 void RenderCopyList(ListElement* first_ptr) {
 
@@ -259,6 +307,24 @@ ListElement* find_element(ListElement* first_ptr, char *_name) {
 
 	return NULL;
 
+}
+
+ListElement* index_ls(ListElement* first_ptr, int index) {
+	
+	curr_ptr = first_ptr;
+	
+	int counter = 0;
+	
+	while(curr_ptr != NULL) {
+		if (counter == index) {
+			return curr_ptr;
+		}
+		curr_ptr = curr_ptr->next_ptr;
+		counter ++;
+	}
+	
+	return NULL;
+	
 }
 
 Entity* get_ent(ListElement* first_ptr, char* _name) {

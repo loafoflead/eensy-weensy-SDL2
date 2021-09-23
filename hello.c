@@ -6,6 +6,8 @@
 #include "FontRenderWrap.h"
 #include "general.h"
 
+#include "animations.h"
+
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 
@@ -23,7 +25,7 @@
 	use the search bar.
 */
 
-/* NOTE: GAME VARIABLES */
+/** @NOTE: GAME VARIABLES **/
 
 int world_x = 0;
 int world_y = 0;
@@ -59,14 +61,21 @@ Entity* text_1;
 
 SDL_Point size;
 
-ListElement* entity_list_1;
+ListElement* entities; /* the entities list, anything that's gonna be interacted with */
+ListElement* background; /* true background layer, will have no interactions with entities at all */
 
-ListElement* world_entity_list;
+SDL_bool is_debug;
 
-ListElement* update_entity_list;
+SDL_Point point; /* point to re-use */
+
 /**********************************/
 
 int main() {
+	
+	if (is_running == SDL_FALSE) {
+		fprintf(stderr, "Warn: is_running is set to false.");
+		return(0);
+	}
 
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) {
 		fprintf(stderr, "Failed to start SDL.\n");
@@ -93,7 +102,8 @@ int main() {
 
 	SDL_Quit();
 	quit_img();
-	free_list(entity_list_1);
+	free_list(entities);
+	free_list(background);
 
 	return(0);
 
@@ -115,13 +125,7 @@ void update_cycle(void) {
 
 	game_update(); // draw world ents 1st 
 
-	RenderCopyList(entity_list_1);
-
-	/* TODO: REVISIT THIS!!!!!!!!!!!!! AAAAAAAAAAAAAA
-	if (lerpp == SDL_TRUE && it < 101) {
-		set_ent_x(new_ent, (int)lerp_float((float) get_x(new_ent), (float) get_x(new_ent) + 10.0f, it / 100));
-		it ++;
-	}*/ 
+	RenderCopyList(entities);
 
 	SDL_RenderPresent(renderer);
 
@@ -129,23 +133,27 @@ void update_cycle(void) {
 
 void initialise_entities(void) {
 	
-	entity_list_1 = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
-	boy = find_element(entity_list_1, "boy")->ent_ptr;
+	entities = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
+	boy = find_element(entities, "boy")->ent_ptr;
 	
-	world_entity_list = init_list_ent_ptr(create_entity("earth.png", 0, 0), "ground");
+	add_ent(entities, create_entity("earth.png", 0, 0), "ground");
 	
-	add_ent(world_entity_list, create_entity("tree1.png", 0, 100), "\"tree\"");
-	add_ent(world_entity_list, create_entity("tree1.png", 500, 100), "\"tree2\"");
+	add_ent(entities, create_entity("tree1.png", 0, 100), "\"tree\"");
+	add_ent(entities, create_entity("tree1.png", 500, 100), "\"tree2\"");
 	
-	update_entity_list = init_list_ent_ptr(create_entity("pear.png", size.x /2, size.y / 2), "pear");
+	background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds_background");
+	add_height(index_ls(background, 0)->ent_ptr, 100);
+	add_width(index_ls(background, 0)->ent_ptr, 100);
 	
 }
 
 void game_update(void) {
 
-	RenderCopyList(world_entity_list);
-	RenderCopyListCenter(update_entity_list);
-	
+	RenderCopyListCenter(background);
+	update_ent_precise(boy);
+
+	set_ent_pos(index_ls(background, 0)->ent_ptr, get_x(boy) / 10, get_y(boy) / 10);
+
 }
 
 void readouts(void) {
@@ -155,7 +163,7 @@ void readouts(void) {
 	fprintf(stderr, "*- --------world_x: %d -- world_y: %d------- -*\n", world_x, world_y);
 	fprintf(stderr, "*- 				   LISTS		     	  -*\n");
 	fprintf(stderr, "*- entity_list_1: ");
-	print_names(entity_list_1);
+	print_names(entities);
 	fprintf(stderr, "*---------------------------------------------*\n");
 
 }
@@ -166,9 +174,6 @@ void update_world_elements(void) {
 	
 }
 
-
-Collision temp_col;
-
 void handle_input(void) {
 
 	switch(event.key.keysym.sym) {
@@ -176,55 +181,57 @@ void handle_input(void) {
 		case SDLK_ESCAPE:
 			is_running = SDL_FALSE;
 			break;
+			
+		case SDLK_z:
+			move_y(boy, -10);
+			break;
+		
+		case SDLK_s:
+			move_y(boy, 10);
+			break;
 
 		case SDLK_d:
-			//move_all(world_entity_list, 5, 0);
-			debug_all(world_entity_list);
-			//move_x(boy, 5);
+			//move_x(boy, 10);
+			add_speed(boy, 1.0f);
 			break;
 
 		case SDLK_q:
-			move_all(world_entity_list, -5, 0);
-			//move_x(boy, -5);
+			//move_x(boy, -10);
+			add_speed(boy, -1.0f);
 			break;
-
-		case SDLK_z:
-			move_all(world_entity_list, 0, -5);
-			//move_x(boy, -5);
+			
+		case SDLK_LEFT:
+			add_direction(boy, 0.1f);
 			break;
-
-		case SDLK_s:
-			move_all(world_entity_list, 0, 5);
-			//move_x(boy, -5);
+			
+		case SDLK_RIGHT:
+			add_direction(boy, -0.1f);
 			break;
-
-		case SDLK_c:
-			replace_sprite(boy, "boy_idle.png");
+			
+		case SDLK_SPACE:
+			point = save_ent_pos(boy);
+			lerp(boy, get_x(boy), get_y(boy) + 80, 5);
+			lerp(boy, point.x, point.y, 5);
 			break;
-
-		case SDLK_r:
-			replace_sprite(boy, "boy_jump.png");
+			
+		case SDLK_c: /* center */
+			set_ent_pos(boy, 0, 0);
 			break;
-
-		case SDLK_u:
+			
+		case SDLK_u: /* debug */
 			who_is(boy);
 			break;
 
-		case SDLK_a:
-			toggle_bool(&boy->hidden);
-			break;
-
 		case SDLK_t:
-			toggle_bool(&boy->debug);
+			toggle_bool(&is_debug);
+			if (is_debug) 
+				debug_all(entities);
+			else 
+				un_debug_all(entities);
 			break;
 
-		case SDLK_p:
-			get_collision_obj(boy, get_ent(world_entity_list, "ground"), &temp_col);
-			tell_collision(&temp_col);
-			break;
-			
-		case SDLK_m:
-			set_ent_pos(boy, 0, 0);
+		case SDLK_o:
+			lerp(boy, 0, 0, 10);
 			break;
 
 		default:

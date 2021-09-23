@@ -7,6 +7,11 @@ SDL_Renderer* renderer;
 
 SDL_Texture* err_texture;
 
+typedef struct v2 {
+	int x, y;
+	float direction, distance;
+} v2 ;
+
 typedef struct entity__ {
 	
 	/// @NOTE: The SDL_Texture object that our entity is drawn as
@@ -21,6 +26,8 @@ typedef struct entity__ {
 	/// @NOTE: Whether or not the sprite is drawn on a render pass
 	SDL_bool hidden;
 	
+	/// @NOTE: the velocity and direction of the entity 
+	v2 velocity; 
 	
 	/// @NOTE: Whether the sprite's debug box is drawn on a render pass
 	SDL_bool debug;
@@ -79,6 +86,28 @@ void draw_debug(Entity* ent);
 	@NOTE: Position
 *************************/
 
+/* get and set entity velocity var */
+v2 get_velocity(Entity* ent);
+void set_velocity(Entity* ent, v2 new_vec);
+
+/* change entity direction */
+void add_direction(Entity* ent, float amount);
+void set_direction(Entity* ent, float amount);
+int get_direction(Entity* ent);
+
+/* change entity speed */
+void add_speed(Entity* ent, float incr);
+void set_speed(Entity* ent, float new_speed);
+int get_speed(Entity* ent);
+
+/* update ent position based on speed and direction */
+void update_ent(Entity* ent);
+void update_ent_precise(Entity* ent);
+
+/* Copy and paste functions for an entity's position */
+SDL_Point save_ent_pos(Entity* ent);
+void restore_ent_pos(Entity* ent, SDL_Point saved_pt);
+
 /* Sets the position of the entity to the position given */
 void set_ent_pos(Entity* ent, int new_x, int new_y);
 
@@ -97,9 +126,15 @@ void set_ent_x(Entity* ent, int _x);
 void move_y(Entity* ent, int change);
 void move_x(Entity* ent, int change);
 
+/* change an entity's x and y by the value given */
+void move_xy(Entity* ent, int xpl, int ypl);
+
 /**************************
 	@NOTE: Dimensions
 **************************/
+
+/* get center of an entity */
+SDL_Point get_center(Entity* ent);
 
 /* get the dimensions of a specified entity */
 int get_width(Entity* ent);
@@ -108,6 +143,10 @@ int get_height(Entity* ent);
 /* set the dimesnsions of a specified entity */
 void set_height(Entity* ent, int value);
 void set_width(Entity* ent, int value);
+
+/* increment dimensions */
+void add_width(Entity* ent, int value);
+void add_height(Entity* ent, int value);
 
 /* change the dimensions of an entity by a value */
 void change_height(Entity* ent, int value);

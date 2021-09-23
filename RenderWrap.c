@@ -194,6 +194,12 @@ Entity* create_entity(char *filename, int _x, int _y) {
 	new_ent_rect->h = surface_ptr->h;
 
 	to_return->ent_rect = new_ent_rect;
+	
+	to_return->velocity.x = _x;
+	to_return->velocity.y = _y;
+	
+	to_return->velocity.direction = 0;
+	to_return->velocity.distance = 0;
 
 	// NOTE: booleans
 
@@ -244,7 +250,17 @@ void draw_debug(Entity* ent) {
 	debug_points[4] = tempo;
 
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+	
 	SDL_RenderDrawLines(renderer, debug_points, 5);
+	
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+	
+	SDL_RenderDrawLine(renderer, 
+		get_center(ent).x, 
+		get_center(ent).y, 
+		get_center(ent).x + (cos(ent->velocity.direction) * 100), 
+		get_center(ent).y + (sin(ent->velocity.direction) * 100)
+	);
 
 }
 
@@ -267,12 +283,90 @@ int replace_sprite(Entity* ent, char* filename) {
 
 }
 
+SDL_Point save_ent_pos(Entity* ent) {
+	SDL_Point p = {ent->ent_rect->x, ent->ent_rect->y};
+	return p;
+}
+
+void restore_ent_pos(Entity* ent, SDL_Point saved_pt) {
+	set_ent_x(ent, saved_pt.x);
+	set_ent_y(ent, saved_pt.y);
+}
+
+v2 get_velocity(Entity* ent) {
+	return ent->velocity;
+}
+
+void set_velocity(Entity* ent, v2 new_vec) {
+	ent->velocity = new_vec;
+}
+
+void add_direction(Entity* ent, float amount) {
+	if ((ent->velocity.direction + amount) > 360) {
+		ent->velocity.direction = (ent->velocity.direction + amount) - 360;
+	}
+	else if ((ent->velocity.direction + amount) < 0) {
+		ent->velocity.direction = (ent->velocity.direction + amount) + 360;
+	}
+	else {
+		ent->velocity.direction += amount;
+	}
+}
+
+void set_direction(Entity* ent, float amount) {
+	if (amount > 360) {
+		ent->velocity.direction = 360;
+	}
+	else if (amount < 0) {
+		ent->velocity.direction = 0;
+	}
+	else {
+		ent->velocity.direction = amount;
+	}
+}
+
+int get_direction(Entity* ent) {
+	return ent->velocity.direction;
+}
+
+void add_speed(Entity* ent, float incr) {
+	ent->velocity.distance += incr;
+}
+
+void set_speed(Entity* ent, float new_speed) {
+	ent->velocity.distance = new_speed;
+}
+
+int get_speed(Entity* ent) {
+	return ent->velocity.distance;
+}
+
+void update_ent(Entity* ent) {
+	move_x(ent, (float) cos(ent->velocity.direction) * ent->velocity.distance); ///@Note: ??? idk some math magic lowl
+	move_y(ent, (float) sin(ent->velocity.direction) * ent->velocity.distance);
+}
+
+void update_ent_precise(Entity* ent) {
+	move_x(ent, cos(ent->velocity.direction) * ent->velocity.distance); ///@Note: ??? idk some math magic lowl
+	move_y(ent, sin(ent->velocity.direction) * ent->velocity.distance);
+}
+
 int get_x(Entity* ent) {
 	return ent->ent_rect->x;
 }
 
 int get_y(Entity* ent) {
 	return ent->ent_rect->y;
+}
+
+void move_xy(Entity* ent, int xpl, int ypl) {
+	move_x(ent, xpl);
+	move_y(ent, ypl);
+}
+
+SDL_Point get_center(Entity* ent) {
+	SDL_Point newp = {get_x(ent) + get_width(ent) / 2, get_y(ent) + get_height(ent) / 2};
+	return newp;
 }
 
 int get_width(Entity* ent) {
@@ -285,6 +379,14 @@ int get_height(Entity* ent) {
 
 void set_height(Entity* ent, int value) {
 	ent->ent_rect->h = value;
+}
+
+void add_width(Entity* ent, int value) {
+	ent->ent_rect->w += value;
+}
+
+void add_height(Entity* ent, int value) {
+	ent->ent_rect->h += value;
 }
 
 void set_width(Entity* ent, int value) {
@@ -380,6 +482,14 @@ void who_is(Entity* ent) {
 
 	fprintf(stderr, "ent hidden: \033[1;31m%d\033[0m\n", ent->hidden);
 	fprintf(stderr, "ent debugged: \033[1;31m%d\033[0m\n", ent->debug);
+	
+	fprintf(stderr, 
+	"ent velocity: x: \033[1;31m %d \033[0m y: \033[1;31m %d \033[0m\n",
+	ent->velocity.x, ent->velocity.y);
+	
+	fprintf(stderr, 
+	"ent direction: \033[1;31m %f \033[0m ent speed: \033[1;31m %f \033[0m\n",
+	ent->velocity.direction, ent->velocity.distance);
 	
 }
 
