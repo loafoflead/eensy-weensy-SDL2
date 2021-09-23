@@ -136,21 +136,19 @@ void initialise_entities(void) {
 	entities = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
 	boy = find_element(entities, "boy")->ent_ptr;
 	
-	add_ent(entities, create_entity("earth.png", 0, 0), "ground");
+	add_ent(entities, create_entity("earth.png", 0, 100), "ground");
 	
-	add_ent(entities, create_entity("tree1.png", 0, 100), "\"tree\"");
-	add_ent(entities, create_entity("tree1.png", 500, 100), "\"tree2\"");
+	add_ent(entities, create_entity("tree1.png", get_x(index_ls(entities, 1)->ent_ptr), get_y(index_ls(entities, 1)->ent_ptr) + 100), "\"tree\"");
+	add_ent(entities, create_entity("tree1.png", get_x(index_ls(entities, 1)->ent_ptr) + 500, get_y(index_ls(entities, 1)->ent_ptr) + 100), "\"tree2\"");
 	
 	background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds_background");
-	add_height(index_ls(background, 0)->ent_ptr, 100);
-	add_width(index_ls(background, 0)->ent_ptr, 100);
 	
 }
 
 void game_update(void) {
 
 	RenderCopyListCenter(background);
-	update_ent_precise(boy);
+	update_ent(boy);
 
 	set_ent_pos(index_ls(background, 0)->ent_ptr, get_x(boy) / 10, get_y(boy) / 10);
 

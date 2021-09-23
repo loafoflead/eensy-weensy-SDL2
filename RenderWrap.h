@@ -29,6 +29,9 @@ typedef struct entity__ {
 	/// @NOTE: the velocity and direction of the entity 
 	v2 velocity; 
 	
+	/// @NOTE: the position of the entity on the previous frame
+	SDL_Point* most_recent_position;
+	
 	/// @NOTE: Whether the sprite's debug box is drawn on a render pass
 	SDL_bool debug;
 	
@@ -89,6 +92,9 @@ void draw_debug(Entity* ent);
 /* get and set entity velocity var */
 v2 get_velocity(Entity* ent);
 void set_velocity(Entity* ent, v2 new_vec);
+
+/* add to the speed and direction vars */
+void add_force(Entity* ent, float speed, float direction);
 
 /* change entity direction */
 void add_direction(Entity* ent, float amount);

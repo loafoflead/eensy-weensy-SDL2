@@ -200,6 +200,11 @@ Entity* create_entity(char *filename, int _x, int _y) {
 	
 	to_return->velocity.direction = 0;
 	to_return->velocity.distance = 0;
+	
+	to_return->most_recent_position = (SDL_Point *) malloc(sizeof(SDL_Point));
+	
+	to_return->most_recent_position->x = 0;
+	to_return->most_recent_position->y = 0;
 
 	// NOTE: booleans
 
@@ -341,12 +346,19 @@ int get_speed(Entity* ent) {
 	return ent->velocity.distance;
 }
 
+void add_force(Entity* ent, float speed, float direction) {
+	add_speed(ent, speed);
+	add_direction(ent, direction);
+}
+
 void update_ent(Entity* ent) {
 	move_x(ent, (float) cos(ent->velocity.direction) * ent->velocity.distance); ///@Note: ??? idk some math magic lowl
 	move_y(ent, (float) sin(ent->velocity.direction) * ent->velocity.distance);
 }
 
 void update_ent_precise(Entity* ent) {
+	ent->most_recent_position->x = get_x(ent);
+	ent->most_recent_position->y = get_y(ent);
 	move_x(ent, cos(ent->velocity.direction) * ent->velocity.distance); ///@Note: ??? idk some math magic lowl
 	move_y(ent, sin(ent->velocity.direction) * ent->velocity.distance);
 }
@@ -474,6 +486,8 @@ void who_is(Entity* ent) {
 	
 	if (!ent) 
 		return; /* null ptr guard */
+	
+	fprintf(stderr, "*---------------------------------------*\n");
 
 	fprintf(stderr, "ent texture name: \033[1;31m%s\033[0m\n", ent->texture_name);
 
