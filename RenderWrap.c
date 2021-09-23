@@ -5,8 +5,9 @@
 #include "RenderWrap.h"
 #include "general.h"
 
-SDL_Renderer* renderer;
+SDL_Point debug_points[5]; /* debug points used to draw hitboxes */
 
+Collision collision_object_static; /* reusable collision object */
 
 float lerp_float(float a, float b, float f) {
     return (a * (1.0f - f)) + (b * f);
@@ -32,6 +33,10 @@ float dist_pt(SDL_Point a, SDL_Point b) {
 }
 
 SDL_bool check_collision(Entity* ent_a, Entity* ent_b) {
+	
+	if (ent_a == NULL || ent_b == NULL) {
+		return SDL_FALSE; /* safeguard null ptrs */
+	}
 
 	/* REF:
 	0				5
@@ -80,8 +85,12 @@ SDL_bool check_collision(Entity* ent_a, Entity* ent_b) {
 }
 
 Collision get_collision(Entity* ent_a, Entity* ent_b) {
-
+	
 	Collision col = {NULL, NULL, {0, 0}};
+
+	if (ent_a == NULL || ent_b == NULL) {
+		return col; /* safeguard null ptrs */
+	}
 
 	SDL_Point temp_pt; /* NOTE: TOP LEFT */
 	temp_pt.x = ent_a->ent_rect->x;
@@ -125,6 +134,26 @@ Collision get_collision(Entity* ent_a, Entity* ent_b) {
 
 	return col;
 	
+}
+
+void get_collision_obj(Entity* ent_a, Entity* ent_b, Collision* collision_object) {
+	
+	collision_object_static = get_collision(ent_a, ent_b);
+	
+	if (collision_object_static.a == NULL)
+		return; /* return if no collision found */
+	
+	collision_object->a = collision_object_static.a;
+	collision_object->b = collision_object_static.b;
+	
+	collision_object->collision_point = collision_object_static.collision_point;
+	
+}
+	
+
+void destroy_entity(Entity* ent) {
+	SDL_DestroyTexture(ent->ent_texture);
+	free(ent);
 }
 
 Entity* create_entity(char *filename, int _x, int _y) {
@@ -192,8 +221,6 @@ void draw_ent(Entity* ent_to_draw) {
 	SDL_RenderCopy(renderer, ent_to_draw->ent_texture, NULL, ent_to_draw->ent_rect);
 
 }
-
-SDL_Point debug_points[5];
 
 void draw_debug(Entity* ent) {
 
@@ -308,6 +335,8 @@ int init_img(SDL_Renderer* renderer) {
 	else {
 		return 0;
 	}
+	err_texture = load_image("err_texture.png");
+	err_entity = create_entity("err_texture.png", 0, 0);
 }
 void quit_img(void) {
 	IMG_Quit();
@@ -340,6 +369,9 @@ SDL_Texture* load_image(char *filename) {
 }
 
 void who_is(Entity* ent) {
+	
+	if (!ent) 
+		return; /* null ptr guard */
 
 	fprintf(stderr, "ent texture name: \033[1;31m%s\033[0m\n", ent->texture_name);
 
@@ -349,4 +381,24 @@ void who_is(Entity* ent) {
 	fprintf(stderr, "ent hidden: \033[1;31m%d\033[0m\n", ent->hidden);
 	fprintf(stderr, "ent debugged: \033[1;31m%d\033[0m\n", ent->debug);
 	
+}
+
+void tell_rect(SDL_Rect* rect) {
+	if (!rect) 
+		return; /* null ptr guard */
+	
+	fprintf(stderr, "Rect x: %d, y: %d, w: %d, h: %d.\n", rect->x, rect->y, rect->w, rect->h);
+}
+
+void tell_collision(Collision* col) {
+	if (col == NULL || col->a == NULL || col->b == NULL)
+		return; /* null ptr guard */
+	
+	fprintf(
+		stderr, 
+		"Collision ent_a->name: %s, x: %d, y: %d, Collision ent_b->name: %s, x: %d, y: %d at pos: x: %d, y: %d.\n", 
+		col->a->texture_name, col->a->ent_rect->x, col->a->ent_rect->y, 
+		col->b->texture_name, col->b->ent_rect->x, col->b->ent_rect->y,
+		col->collision_point.x, col->collision_point.y
+	);
 }

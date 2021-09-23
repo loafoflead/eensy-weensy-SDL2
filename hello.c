@@ -3,6 +3,7 @@
 
 #include "RenderWrap.h"
 #include "RenderList.h" 
+#include "FontRenderWrap.h"
 #include "general.h"
 
 #define SCREEN_WIDTH 640
@@ -30,11 +31,16 @@ int world_y = 0;
 /* END */
 
 SDL_Window* window;
-SDL_Renderer* renderer;
+extern SDL_Renderer* renderer;
 
 SDL_Event event;
 
 SDL_bool is_running = SDL_TRUE;
+
+
+/** @NOTE: function declarations **/
+
+void initialise_entities(void);
 
 void update_cycle(void);
 void handle_input(void);
@@ -43,16 +49,24 @@ void game_update(void);
 void readouts(void);
 
 void update_world_elements(void);
+/**********************************/
+
+
+/** @NOTE: Variable declarations **/
 
 Entity* boy;
+Entity* text_1;
+
+SDL_Point size;
 
 ListElement* entity_list_1;
 
 ListElement* world_entity_list;
 
-int main() {
+ListElement* update_entity_list;
+/**********************************/
 
-	SDL_Point size;
+int main() {
 
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) {
 		fprintf(stderr, "Failed to start SDL.\n");
@@ -65,30 +79,16 @@ int main() {
 		exit(8);
 	}
 
-	SDL_GetWindowSize(window, &size.x, &size.y); // TODO: Figure out how to make the "center" of sprites not
-												 // be the top left <3 much love good luck
+	SDL_GetWindowSize(window, &size.x, &size.y);
 
 	init_img(renderer);
-
-	fprintf(stderr, "\n\n\n\n\n\n\n\n\n");
-	CLS();
-
-	boy = create_entity("boy_idle.png", size.x / 2, size.y /2);
-	world_entity_list = init_list_ent_ptr(create_entity("earth.png", 0, 0), "ground");
-
-	entity_list_1 = init_list_ent_ptr(boy, "boy");
-	add_ent(world_entity_list, create_entity("boy_jump.png", 0, 0), "\"tree\"");
-	add_ent(world_entity_list, create_entity("boy_jump.png", 100, 0), "\"tree2\"");
-
-	//who_is(boy);
-
-	debug_all(world_entity_list);
-	debug_all(entity_list_1);
+	
+	initialise_entities();
 	
 	while (is_running) {
+		
 		update_cycle();
-		//who_is(boy);
-		//SDL_Delay(1000);
+		
 	}
 
 	SDL_Quit();
@@ -98,9 +98,6 @@ int main() {
 	return(0);
 
 }
-
-float it = 0;
-SDL_bool lerpp = SDL_FALSE;
 
 void update_cycle(void) {
 
@@ -116,7 +113,7 @@ void update_cycle(void) {
 		}
 	}
 
-	game_update();
+	game_update(); // draw world ents 1st 
 
 	RenderCopyList(entity_list_1);
 
@@ -130,19 +127,25 @@ void update_cycle(void) {
 
 }
 
-int j = 0;
+void initialise_entities(void) {
+	
+	entity_list_1 = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
+	boy = find_element(entity_list_1, "boy")->ent_ptr;
+	
+	world_entity_list = init_list_ent_ptr(create_entity("earth.png", 0, 0), "ground");
+	
+	add_ent(world_entity_list, create_entity("tree1.png", 0, 100), "\"tree\"");
+	add_ent(world_entity_list, create_entity("tree1.png", 500, 100), "\"tree2\"");
+	
+	update_entity_list = init_list_ent_ptr(create_entity("pear.png", size.x /2, size.y / 2), "pear");
+	
+}
 
 void game_update(void) {
 
-	update_world_elements();
-
-	if (check_collision(find_element(world_entity_list, "\"tree\"")->ent_ptr, boy) == SDL_TRUE) {
-		//fprintf(stderr, "col\n");
-		//remove_element(world_entity_list, find_element(world_entity_list, "\"tree\""));
-	}
-
-	readouts();
-
+	RenderCopyList(world_entity_list);
+	RenderCopyListCenter(update_entity_list);
+	
 }
 
 void readouts(void) {
@@ -158,19 +161,13 @@ void readouts(void) {
 }
 
 void update_world_elements(void) {
-	ListElement** bg_list = get_list_arr(world_entity_list);
-
-	for(int i = 0; i < list_len(world_entity_list); i ++) {
-		//fprintf(stderr, "current_ent: %s\n", bg_list[i]->ent_ptr->texture_name);
-		set_ent_x(bg_list[i]->ent_ptr, bg_list[i]->ent_ptr->ent_rect->x + world_x); 
-		set_ent_y(bg_list[i]->ent_ptr, bg_list[i]->ent_ptr->ent_rect->y + world_y); 
-	}
-
-	RenderCopyList(world_entity_list);
+	
+	
+	
 }
 
 
-
+Collision temp_col;
 
 void handle_input(void) {
 
@@ -181,22 +178,23 @@ void handle_input(void) {
 			break;
 
 		case SDLK_d:
-			world_x += 10;
+			//move_all(world_entity_list, 5, 0);
+			debug_all(world_entity_list);
 			//move_x(boy, 5);
 			break;
 
 		case SDLK_q:
-			world_x -= 10;
+			move_all(world_entity_list, -5, 0);
 			//move_x(boy, -5);
 			break;
 
 		case SDLK_z:
-			world_y -= 10;
+			move_all(world_entity_list, 0, -5);
 			//move_x(boy, -5);
 			break;
 
 		case SDLK_s:
-			world_y += 10;
+			move_all(world_entity_list, 0, 5);
 			//move_x(boy, -5);
 			break;
 
@@ -221,6 +219,12 @@ void handle_input(void) {
 			break;
 
 		case SDLK_p:
+			get_collision_obj(boy, get_ent(world_entity_list, "ground"), &temp_col);
+			tell_collision(&temp_col);
+			break;
+			
+		case SDLK_m:
+			set_ent_pos(boy, 0, 0);
 			break;
 
 		default:

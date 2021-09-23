@@ -4,23 +4,67 @@
 
 #include "SDL2/SDL.h"
 
-//static ListElement* first_ptr; /* ptr to first element in list */
-
 static ListElement* curr_ptr; /* Reusable ptr */
+static ListElement** temp_list; /* reusable ptr list */
 
-static int list_length = 0;
+Collision** collision_list; /** @note: collision list **/
 
+Collision** get_collisions(ListElement* first_ptr) {
+	
+	if (first_ptr == NULL) 
+		return NULL; /* null ptr safeguard */
+	
+	temp_list = get_list_arr(first_ptr);
+	
+	collision_list = (Collision** ) malloc(sizeof(Collision) * count_collisions(first_ptr));
+	
+	for(int i = 0; i < list_len(first_ptr); i ++) {
+		for (int j = i + 1; j < list_len(first_ptr); j ++) {
+
+			if (check_collision(temp_list[i]->ent_ptr, temp_list[j]->ent_ptr) == SDL_TRUE) {
+				collision_list[i]->a = temp_list[i]->ent_ptr;
+				collision_list[i]->b = temp_list[j]->ent_ptr;
+			}
+
+		}
+	}
+	
+	return collision_list;
+	
+}
+
+void get_collisions_toarray(ListElement* first_ptr, Collision** collision_array_pointer) {
+	
+	temp_list = get_list_arr(first_ptr);
+	
+	for(int i = 0; i < list_len(first_ptr); i ++) {
+		
+		if (i = (sizeof(collision_array_pointer) / sizeof(collision_array_pointer[0])) - 1) {
+			break ;
+		}
+		
+		for (int j = i + 1; j < list_len(first_ptr); j ++) {
+
+			if (check_collision(temp_list[i]->ent_ptr, temp_list[j]->ent_ptr) == SDL_TRUE) {
+				get_collision_obj(temp_list[i]->ent_ptr, temp_list[j]->ent_ptr, (*collision_array_pointer + i));
+			}
+
+		}
+	}
+	
+}
+	
 
 int count_collisions(ListElement* first_ptr) {
 
-	ListElement** list = get_list_arr(first_ptr);
+	temp_list = get_list_arr(first_ptr);
 
 	int collision_count = 0;
 
 	for(int i = 0; i < list_len(first_ptr); i ++) {
 		for (int j = i + 1; j < list_len(first_ptr); j ++) {
 
-			if (check_collision(list[i]->ent_ptr, list[j]->ent_ptr) == SDL_TRUE) {
+			if (check_collision(temp_list[i]->ent_ptr, temp_list[j]->ent_ptr) == SDL_TRUE) {
 				collision_count ++;
 			}
 
@@ -65,10 +109,9 @@ void free_list(ListElement* first_ptr) {
 	while(curr_ptr != NULL) {
 		temp_ptr = curr_ptr;
 		curr_ptr = curr_ptr->next_ptr;
+		destroy_entity(temp_ptr->ent_ptr);
 		free(temp_ptr);
 	}
-
-	list_length = 0;
 
 }
 
@@ -116,6 +159,30 @@ void un_debug_all(ListElement* first_ptr) {
 
 }
 
+void set_all(ListElement* first_ptr, int _x, int _y) {
+
+	curr_ptr = first_ptr;
+
+	while(curr_ptr != NULL) {
+		curr_ptr->ent_ptr->ent_rect->x = _x;
+		curr_ptr->ent_ptr->ent_rect->y = _y;
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+}
+
+void move_all(ListElement* first_ptr, int _x, int _y) {
+
+	curr_ptr = first_ptr;
+
+	while(curr_ptr != NULL) {
+		curr_ptr->ent_ptr->ent_rect->x += _x;
+		curr_ptr->ent_ptr->ent_rect->y += _y;
+		curr_ptr = curr_ptr->next_ptr;
+	}
+
+}
+
 
 void RenderCopyList(ListElement* first_ptr) {
 
@@ -148,11 +215,20 @@ void RenderCopyListCenter(ListElement* first_ptr) {
 }
 
 
+int copy_list(ListElement* first_a, ListElement* first_b) {
+	
+	first_b = first_a;
+	
+}
+
 ListElement** get_list_arr(ListElement* first_ptr) {
+	
+	if (first_ptr = NULL) 
+		return NULL;
 
 	curr_ptr = first_ptr;
 
-	ListElement** arr_to_return = (ListElement** ) malloc(sizeof(ListElement) * list_length);
+	ListElement** arr_to_return = (ListElement** ) malloc(sizeof(ListElement) * list_len(first_ptr));
 
 	int index = 0;
 
@@ -185,6 +261,10 @@ ListElement* find_element(ListElement* first_ptr, char *_name) {
 
 }
 
+Entity* get_ent(ListElement* first_ptr, char* _name) {
+	return find_element(first_ptr, _name)->ent_ptr;
+}
+
 /// TODO: This does -n-o-t- WORKS :) !!!!!
 void add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
 
@@ -201,8 +281,6 @@ void add_ent(ListElement* first_ptr, Entity* new_ent, char* _name) {
 	strcpy(new_ptr->name, _name);
 
 	curr_ptr->next_ptr = new_ptr;
-
-	list_length ++;
 
 }
 
@@ -229,7 +307,11 @@ void remove_element(ListElement* first_ptr, ListElement* el_ptr) {
 		curr_ptr = curr_ptr->next_ptr;
 	}
 
-	curr_ptr->next_ptr = el_ptr->next_ptr;
+	if (el_ptr->next_ptr != NULL)
+		curr_ptr->next_ptr = el_ptr->next_ptr;
+	else 
+		curr_ptr->next_ptr = NULL;
+
 	free(el_ptr);
 
 }
@@ -241,8 +323,6 @@ ListElement* init_list_ent_ptr(Entity* e, char* _name) {
 	first_ptr->ent_ptr = e;
 
 	strcpy(first_ptr->name, _name);
-
-	list_length ++;
 
 	return first_ptr;
 
