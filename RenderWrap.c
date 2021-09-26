@@ -5,21 +5,30 @@
 #include "RenderWrap.h"
 #include "general.h"
 
+#define checknull( ent , ret_type ) \
+	if (ent == NULL) { return ret_type; }
+
 SDL_Point debug_points[5]; /* debug points used to draw hitboxes */
+
+SDL_Point zero = {0,0};
+v2 null_v2 = {0, 0, 0.0f, 0.0f};
 
 Collision collision_object_static; /* reusable collision object */
 
 void set_action(Entity* ent, void (*func)(void *)) {
+	checknull(ent, );
 	ent->action = func;
 	ent->run_actions = SDL_TRUE;
 }
 
 void remove_action(Entity* ent) {
+	checknull(ent, );
 	ent->run_actions = SDL_FALSE;
 	ent->action = NULL;
 }
 
 void run_action(Entity* ent, void* args) {
+	checknull(ent, );
 	if (ent->action == NULL) 
 		return;
 	fprintf(stderr, "tried to run an action\n");
@@ -171,6 +180,7 @@ void get_collision_obj(Entity* ent_a, Entity* ent_b, Collision* collision_object
 	
 
 void destroy_entity(Entity* ent) {
+	checknull(ent, );
 	SDL_DestroyTexture(ent->ent_texture);
 	free(ent);
 }
@@ -237,6 +247,8 @@ Entity* create_entity(char *filename, int _x, int _y) {
 }
 
 void draw_ent_center(Entity* ent_to_draw) {
+	
+	checknull(ent_to_draw, );
 
 	SDL_Rect rect_ptr = *ent_to_draw->ent_rect;
 
@@ -248,12 +260,16 @@ void draw_ent_center(Entity* ent_to_draw) {
 }
 
 void draw_ent(Entity* ent_to_draw) {
+	
+	checknull(ent_to_draw, );
 
 	SDL_RenderCopy(renderer, ent_to_draw->ent_texture, NULL, ent_to_draw->ent_rect);
 
 }
 
 void draw_debug(Entity* ent) {
+	
+	checknull(ent, );
 
 	SDL_Point tempo = {get_x(ent), get_y(ent)};  /* *------| */
 	debug_points[0] = tempo;
@@ -290,6 +306,8 @@ void draw_debug(Entity* ent) {
 }
 
 int replace_sprite(Entity* ent, char* filename) {
+	
+	checknull(ent, -1);
 
 	if (strcmp(ent->texture_name, filename) == 0) {
 		return 2;
@@ -309,24 +327,29 @@ int replace_sprite(Entity* ent, char* filename) {
 }
 
 SDL_Point save_ent_pos(Entity* ent) {
+	checknull(ent, zero);
 	SDL_Point p = {ent->ent_rect->x, ent->ent_rect->y};
 	return p;
 }
 
 void restore_ent_pos(Entity* ent, SDL_Point saved_pt) {
+	checknull(ent, );
 	set_ent_x(ent, saved_pt.x);
 	set_ent_y(ent, saved_pt.y);
 }
 
 v2 get_velocity(Entity* ent) {
+	checknull(ent, null_v2);
 	return ent->velocity;
 }
 
 void set_velocity(Entity* ent, v2 new_vec) {
+	checknull(ent, );
 	ent->velocity = new_vec;
 }
 
 void add_direction(Entity* ent, float amount) {
+	checknull(ent, );
 	if ((ent->velocity.direction + amount) > 360) {
 		ent->velocity.direction = (ent->velocity.direction + amount) - 360;
 	}
@@ -339,6 +362,7 @@ void add_direction(Entity* ent, float amount) {
 }
 
 void set_direction(Entity* ent, float amount) {
+	checknull(ent, );
 	if (amount > 360) {
 		ent->velocity.direction = 360;
 	}
@@ -350,33 +374,40 @@ void set_direction(Entity* ent, float amount) {
 	}
 }
 
-int get_direction(Entity* ent) {
+float get_direction(Entity* ent) {
+	checknull(ent, 0.0f);
 	return ent->velocity.direction;
 }
 
 void add_speed(Entity* ent, float incr) {
+	checknull(ent, );
 	ent->velocity.distance += incr;
 }
 
 void set_speed(Entity* ent, float new_speed) {
+	checknull(ent, );
 	ent->velocity.distance = new_speed;
 }
 
-int get_speed(Entity* ent) {
+float get_speed(Entity* ent) {
+	checknull(ent, 0.0f);
 	return ent->velocity.distance;
 }
 
 void add_force(Entity* ent, float speed, float direction) {
+	checknull(ent, );
 	add_speed(ent, speed);
 	add_direction(ent, direction);
 }
 
 void update_ent(Entity* ent) {
+	checknull(ent, );
 	move_x(ent, (float) cos(ent->velocity.direction) * ent->velocity.distance); ///@Note: ??? idk some math magic lowl
 	move_y(ent, (float) sin(ent->velocity.direction) * ent->velocity.distance);
 }
 
 void update_ent_precise(Entity* ent) {
+	checknull(ent, );
 	ent->most_recent_position->x = get_x(ent);
 	ent->most_recent_position->y = get_y(ent);
 	move_x(ent, cos(ent->velocity.direction) * ent->velocity.distance); ///@Note: ??? idk some math magic lowl
@@ -384,78 +415,116 @@ void update_ent_precise(Entity* ent) {
 }
 
 int get_x(Entity* ent) {
+	checknull(ent, 0);
 	return ent->ent_rect->x;
 }
 
 int get_y(Entity* ent) {
+	checknull(ent, 0);
 	return ent->ent_rect->y;
 }
 
 void move_xy(Entity* ent, int xpl, int ypl) {
+	checknull(ent, );
 	move_x(ent, xpl);
 	move_y(ent, ypl);
 }
 
 SDL_Point get_center(Entity* ent) {
+	checknull(ent, zero);
 	SDL_Point newp = {get_x(ent) + get_width(ent) / 2, get_y(ent) + get_height(ent) / 2};
 	return newp;
 }
 
+void set_debug(Entity* ent, int boo) {
+	checknull(ent, );
+	ent->debug = boo;
+}
+
+SDL_bool get_debug(Entity* ent) {
+	checknull(ent, SDL_FALSE);
+	return ent->debug;
+}
+
+void set_hidden(Entity* ent, int boo) {
+	checknull(ent, );
+	ent->hidden = boo;
+}
+
+SDL_bool get_hidden(Entity* ent) {
+	checknull(ent, SDL_FALSE);
+	return ent->hidden;
+}
+
 int get_width(Entity* ent) {
+	checknull(ent, 0);
 	return ent->ent_rect->w;
 }
 
 int get_height(Entity* ent) {
+	checknull(ent, 0);
 	return ent->ent_rect->h;
 }
 
 void set_height(Entity* ent, int value) {
+	checknull(ent, );
 	ent->ent_rect->h = value;
 }
 
 void add_width(Entity* ent, int value) {
+	checknull(ent, );
 	ent->ent_rect->w += value;
 }
 
 void add_height(Entity* ent, int value) {
+	checknull(ent, );
 	ent->ent_rect->h += value;
 }
 
 void set_width(Entity* ent, int value) {
+	checknull(ent, );
 	ent->ent_rect->w = value;
 }
 
 void change_height(Entity* ent, int value) {
+	checknull(ent, );
 	ent->ent_rect->h += value;
 }
 
 void change_width(Entity* ent, int value) {
+	checknull(ent, );
 	ent->ent_rect->w += value;
 }
 
 void set_ent_x(Entity* ent, int _x) {
+	checknull(ent, );
 	ent->ent_rect->x = _x;
 }
 
 void set_ent_y(Entity* ent, int _y) {
+	checknull(ent, );
 	ent->ent_rect->y = _y;
 }
 
 void set_ent_pos(Entity* ent, int new_x, int new_y) {
+	checknull(ent, );
 	ent->ent_rect->x = new_x;
 	ent->ent_rect->y = new_y;
 }
 
 void set_ent_pos_point(Entity* ent, SDL_Point pt) {
+	checknull(ent, );
 	ent->ent_rect->x = pt.x;
 	ent->ent_rect->y = pt.y;
 }
 
 void move_x(Entity* ent, int change) {
+	checknull(ent, );
 	ent->ent_rect->x += change;
 }
 
 void move_y(Entity* ent, int change) {
+	checknull(ent, );
 	ent->ent_rect->y += change;
 }
 

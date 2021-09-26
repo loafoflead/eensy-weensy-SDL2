@@ -3,6 +3,7 @@
 
 #include "RenderWrap.h"
 #include "RenderList.h" 
+#include "RenderArrays.h"
 #include "FontRenderWrap.h"
 #include "general.h"
 
@@ -29,23 +30,6 @@
 
 int world_x = 0;
 int world_y = 0;
-
-
-
-void run(void* entt) {
-	
-	fprintf(stderr, "hi\n");
-	Entity* ent = entt;
-	if (ent == NULL) 
-		return;
-	
-	fprintf(stderr, "got me ent\n");
-	
-	for (int i = 0; i < 10; i ++)
-		lerp(ent, get_x(ent) + 60, get_y(ent), 10);
-	
-	remove_action(ent);
-}
 
 /* END */
 
@@ -77,6 +61,8 @@ Entity* boy;
 Entity* pear;
 
 SDL_Point size;
+
+Entity *entity_array[100];
 
 ListElement* entities; /* the entities list, anything that's gonna be interacted with */
 ListElement* background; /* true background layer, will have no interactions with entities at all */
@@ -142,7 +128,8 @@ void update_cycle(void) {
 
 	game_update(); // draw world ents 1st 
 
-	RenderCopyList(entities);
+	//RenderCopyList(entities);
+	draw_array(entity_array);
 
 	SDL_RenderPresent(renderer);
 
@@ -153,8 +140,12 @@ void initialise_entities(void) {
 	entities = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
 	boy = find_element(entities, "boy")->ent_ptr;
 	
+	entity_array[0] = boy;
+	
 	add_ent(entities, create_entity("pear.png", 0, 0), "pear");
 	pear = get_ent(entities, "pear");
+	
+	entity_array[1] = pear;
 	
 	background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds");
 	
@@ -162,10 +153,10 @@ void initialise_entities(void) {
 
 void game_update(void) {
 
-	RenderCopyListCenter(background);
+	/*RenderCopyListCenter(background);
 	update_all(entities);
 
-	set_ent_pos(index_ls(background, 0)->ent_ptr, get_x(boy) / 10, get_y(boy) / 10);
+	set_ent_pos(index_ls(background, 0)->ent_ptr, get_x(boy) / 10, get_y(boy) / 10);*/
 
 }
 
@@ -187,8 +178,6 @@ void update_world_elements(void) {
 	
 }
 
-Entity* temp;
-
 void handle_input(void) {
 
 	switch(event.key.keysym.sym) {
@@ -202,7 +191,8 @@ void handle_input(void) {
 			break;
 		
 		case SDLK_s:
-			move_y(boy, 10);
+			set_debug(boy, SDL_TRUE);
+			//move_y(boy, 10);
 			break;
 
 		case SDLK_d:
@@ -224,13 +214,13 @@ void handle_input(void) {
 			break;
 			
 		case SDLK_SPACE:
-			temp = add_ent(entities, create_entity("pear.png", get_x(boy), get_y(boy)), "pear_todie")->ent_ptr;
-			//set_speed(temp, 10.5f); 
-			set_action(temp, &run);
+			toggle_property(entity_array, DEBUG_DRAWING);
+			change_property(entity_array, XPOS, 10);
 			break;
 			
 		case SDLK_c: /* center */
-			set_ent_pos(boy, 0, 0);
+			//set_ent_pos(boy, 0, 0);
+			remove_entity(entity_array, boy);
 			break;
 			
 		case SDLK_u: /* debug */
@@ -246,7 +236,8 @@ void handle_input(void) {
 			break;
 
 		case SDLK_o:
-			lerp(boy, 0, 0, 10);
+			list_ents(entity_array);
+			//lerp(boy, 0, 0, 10);
 			break;
 
 		default:

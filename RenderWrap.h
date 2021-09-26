@@ -7,6 +7,17 @@ SDL_Renderer* renderer;
 
 SDL_Texture* err_texture;
 
+enum entity_properties {
+	DEBUG_DRAWING = 0,
+	HIDDEN = 1,
+	XPOS = 2,
+	YPOS = 3,
+	WIDTH = 4,
+	HEIGHT = 5,
+	DIR = 6,
+	SPEED = 7,
+};
+
 typedef struct v2 {
 	int x, y;
 	float direction, distance;
@@ -105,12 +116,12 @@ void add_force(Entity* ent, float speed, float direction);
 /* change entity direction */
 void add_direction(Entity* ent, float amount);
 void set_direction(Entity* ent, float amount);
-int get_direction(Entity* ent);
+float get_direction(Entity* ent);
 
 /* change entity speed */
 void add_speed(Entity* ent, float incr);
 void set_speed(Entity* ent, float new_speed);
-int get_speed(Entity* ent);
+float get_speed(Entity* ent);
 
 /* update ent position based on speed and direction */
 void update_ent(Entity* ent);
@@ -164,7 +175,13 @@ void add_height(Entity* ent, int value);
 void change_height(Entity* ent, int value);
 void change_width(Entity* ent, int value);
 
+void set_debug(Entity* ent, int boo);
 
+void set_hidden(Entity* ent, int boo);
+
+SDL_bool get_debug(Entity* ent);
+
+SDL_bool get_hidden(Entity* ent);
 
 /**
 	@NOTE: Point manipulation funcs 
