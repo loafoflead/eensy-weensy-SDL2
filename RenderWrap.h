@@ -35,19 +35,19 @@ typedef struct entity__ {
 	SDL_Rect* ent_rect;
 	
 	/// @NOTE: Whether or not the sprite is drawn on a render pass
-	SDL_bool hidden;
+	short int hidden;
 	
 	/// @NOTE: the velocity and direction of the entity 
-	v2 velocity; 
+	v2* velocity; 
 	
 	/// @NOTE: the position of the entity on the previous frame
 	SDL_Point* most_recent_position;
 	
 	/// @NOTE: Whether the sprite's debug box is drawn on a render pass
-	SDL_bool debug;
+	short int debug;
 	
 	/// @note: whether or not to run the optional function attatched to the entity
-	SDL_bool run_actions;
+	short int run_actions;
 	
 	/// @note: optional func to run each update cycle 
 	void (*action)(void *);

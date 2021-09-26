@@ -5,6 +5,11 @@
 #include "RenderWrap.h"
 #include "RenderList.h"
 
+enum movement_types {
+	LERP = 0,
+	NORMAL = 1
+};
+
 struct lerp_args {
 	Entity* ent;
 	int x;

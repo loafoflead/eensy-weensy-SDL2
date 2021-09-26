@@ -140,7 +140,7 @@ void go_to(int x, int y) {
 	fflush(stdout);
 }
 
-void toggle_bool(SDL_bool* boolean) {
+void toggle_bool(short int* boolean) {
 	if ((*boolean) == 0) {
 		*boolean = 1;
 	}

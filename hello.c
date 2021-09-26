@@ -24,6 +24,8 @@
 
 	export DISPLAY=:0 <- to make xMing show a picture, make sure to run the app first,
 	use the search bar.
+	
+	gcc *.c -o hello.exe -lSDL2main -lSDL2 -lSDL2_image -lm -lSDL2_ttf -lpthread <- current compilation command :) 
 */
 
 /** @NOTE: GAME VARIABLES **/
@@ -62,12 +64,12 @@ Entity* pear;
 
 SDL_Point size;
 
-Entity *entity_array[100];
+Entity *entity_array[1024]; 
 
 ListElement* entities; /* the entities list, anything that's gonna be interacted with */
 ListElement* background; /* true background layer, will have no interactions with entities at all */
 
-SDL_bool is_debug;
+short int is_debug;
 
 SDL_Point point; /* point to re-use */
 
@@ -76,7 +78,7 @@ SDL_Point point; /* point to re-use */
 int main() {
 	
 	if (is_running == SDL_FALSE) {
-		fprintf(stderr, "Warn: is_running is set to false.");
+		fprintf(stderr, "Warn: is_running is set to false.\n");
 		return(0);
 	}
 
@@ -105,8 +107,11 @@ int main() {
 
 	SDL_Quit();
 	quit_img();
-	free_list(entities);
-	free_list(background);
+	
+	destroy_array(entity_array);
+	
+	/*free_list(entities);
+	free_list(background);*/
 
 	return(0);
 
@@ -137,21 +142,25 @@ void update_cycle(void) {
 
 void initialise_entities(void) {
 	
-	entities = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
-	boy = find_element(entities, "boy")->ent_ptr;
+	//entities = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
+	//boy = find_element(entities, "boy")->ent_ptr;
 	
-	entity_array[0] = boy;
+	entity_array[0] = create_entity("boy_idle.png", size.x / 2, size.y /2);
+	boy = entity_array[0]; /// @TODO: error where either memory of an entity isnt freed or this ptr is pointing somewhere idk?? either way :( fix it
 	
-	add_ent(entities, create_entity("pear.png", 0, 0), "pear");
-	pear = get_ent(entities, "pear");
+	//add_ent(entities, create_entity("pear.png", 0, 0), "pear");
+	//pear = get_ent(entities, "pear");
 	
-	entity_array[1] = pear;
+	entity_array[1] = create_entity("pear.png", 0, 0);
+	pear = entity_array[1];
 	
-	background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds");
+	//background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds");
 	
 }
 
 void game_update(void) {
+
+	update_arr(entity_array);
 
 	/*RenderCopyListCenter(background);
 	update_all(entities);
@@ -191,8 +200,7 @@ void handle_input(void) {
 			break;
 		
 		case SDLK_s:
-			set_debug(boy, SDL_TRUE);
-			//move_y(boy, 10);
+			move_y(boy, 10);
 			break;
 
 		case SDLK_d:
@@ -215,12 +223,14 @@ void handle_input(void) {
 			
 		case SDLK_SPACE:
 			toggle_property(entity_array, DEBUG_DRAWING);
-			change_property(entity_array, XPOS, 10);
+			change_property(entity_array, YPOS, 105);
 			break;
 			
 		case SDLK_c: /* center */
 			//set_ent_pos(boy, 0, 0);
-			remove_entity(entity_array, boy);
+			//remove_entity(entity_array, &boy);
+			destroy_array(entity_array);
+			set_all_positions(entity_array, NORMAL, 0, 0);
 			break;
 			
 		case SDLK_u: /* debug */
@@ -228,11 +238,7 @@ void handle_input(void) {
 			break;
 
 		case SDLK_t:
-			toggle_bool(&is_debug);
-			if (is_debug) 
-				debug_all(entities);
-			else 
-				un_debug_all(entities);
+			toggle_property(entity_array, DEBUG_DRAWING);
 			break;
 
 		case SDLK_o:

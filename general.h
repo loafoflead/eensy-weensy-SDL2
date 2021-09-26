@@ -24,7 +24,7 @@ int gen_len(gen_list* first);
 
 gen_list** gen_list_as_array(gen_list* ); /* return the list as a traditional array */
 
-void toggle_bool(SDL_bool* );
+void toggle_bool(short int* );
 int sizeof_arr(void* array);
 void go_to(int x, int y);
 

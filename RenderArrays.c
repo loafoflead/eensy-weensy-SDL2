@@ -4,18 +4,25 @@
 
 #include "RenderWrap.h"
 #include "RenderArrays.h"
+#include "animations.h"
 #include "general.h"
 
+Entity* ent;
+
 void list_ents(Entity *arr[]) {
+	if (count_elements(arr) < 1) {
+		fprintf(stderr, "[ array null! ]");
+	}
 	for (int i = 0; i < count_elements(arr); i ++) {
 		fprintf(
 			stderr, 
-			"[ %s >> x: %d y: %d >> dir: %f >> speed: %f ] ",
+			"[ %s >> x: %d y: %d >> dir: %f >> speed: %f >> at index: %d] ",
 			arr[i]->texture_name, 
 			get_x(arr[i]), 
 			get_y(arr[i]),
 			get_direction(arr[i]),
-			get_speed(arr[i])
+			get_speed(arr[i]),
+			i
 		);
 	}
 	fputc('\n', stderr);
@@ -92,7 +99,50 @@ void toggle_property(Entity *arr[], enum entity_properties props) {
 	
 }
 
-void remove_entity(Entity *arr[], Entity* ent) {
+void set_all_positions(Entity *arr[], enum movement_types mt, int x, int y) {
+	
+	switch(mt) {
+		
+		case LERP:
+			for (int i = 0; i < count_elements(arr); i ++) {
+				lerp(arr[i], x, y, 10);
+			}
+		break;
+			
+		case NORMAL:
+			for (int i = 0; i < count_elements(arr); i ++) {
+				set_ent_pos(arr[i], x, y);
+			}
+		break;
+		
+	}
+	
+}
+
+	
+	
+
+
+void update_arr(Entity *arr[]) {
+	for (int i = 0; i < count_elements(arr); i ++) {
+		update_ent(arr[i]);
+	}
+}
+
+void add_next_ent(Entity *arr[], Entity* new_ent) {
+	for (int i = 0; i < count_elements(arr); i ++) {
+		if (arr[i] == NULL) {
+			arr[i] = new_ent;
+		}
+	}
+}
+
+void remove_entity(Entity *arr[], Entity** entt) {
+	
+	ent = *entt;
+	
+	if (!ent)
+		return; // null ptr safeguard 
 	
 	for (int i = 0; i < count_elements(arr); i ++) {
 		
@@ -101,7 +151,8 @@ void remove_entity(Entity *arr[], Entity* ent) {
 		
 		if (arr[i] == ent) { /// @note find the element, now resize the list in backwards order ??? aa
 		
-			destroy_entity(arr[i]);			
+			destroy_entity(arr[i]);		
+			*entt = NULL;
 			
 			for (int b = i; b < count_elements(arr); b ++) { // go thru the list setting each element to the element in 
 				arr[b] = arr[b + 1];
@@ -154,6 +205,14 @@ Entity *search_array(Entity *array[], char *texture_name) {
 		}
 	}
 	return NULL;
+}
+
+int index_of_ent(Entity *arr[], Entity* ent) {
+	for (int i = 0; i < count_elements(arr); i ++) {
+		if (arr[i] == ent) {
+			return i;
+		}
+	}
 }
 
 void set_array_pos(Entity *arr[], int new_x, int new_y) {
