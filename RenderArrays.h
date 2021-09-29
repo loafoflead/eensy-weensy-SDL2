@@ -1,10 +1,12 @@
 #ifndef RENDER__ARRAYS__H
 #define RENDER__ARRAYS__H
 
+#include "Entity.h"
 #include "animations.h"
 #include "RenderWrap.h"
 #include "RenderList.h"
 #include "general.h"
+
 
 #include <SDL2/SDL.h>
 #include <math.h>

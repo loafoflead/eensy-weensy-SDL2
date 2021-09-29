@@ -2,6 +2,7 @@
 #define RENDER_LIST_H value
 
 #include "RenderWrap.h"
+#include "Entity.h"
 #include "SDL2/SDL.h" 
 
 typedef struct list_element_ {

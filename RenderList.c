@@ -1,7 +1,9 @@
+#include "Entity.h"
 #include "RenderList.h"
 #include "RenderWrap.h"
 #include "general.h"
 #include "animations.h"
+
 
 #include "SDL2/SDL.h"
 
@@ -127,7 +129,7 @@ void free_list(ListElement* first_ptr) {
 	while(curr_ptr != NULL) {
 		temp_ptr = curr_ptr;
 		curr_ptr = curr_ptr->next_ptr;
-		destroy_entity(temp_ptr->ent_ptr);
+		destroy_entity(&temp_ptr->ent_ptr);
 		free(temp_ptr);
 	}
 
@@ -229,8 +231,6 @@ void update_all(ListElement* first) {
 		if (curr_ptr->ent_ptr == NULL) 
 			continue;
 		update_ent(curr_ptr->ent_ptr);
-		if(curr_ptr->ent_ptr->run_actions == SDL_TRUE)
-			run_action(curr_ptr->ent_ptr, curr_ptr->ent_ptr);
 		curr_ptr = curr_ptr->next_ptr;
 	}
 	

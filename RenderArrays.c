@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 
+
+#include "Entity.h"
 #include "RenderWrap.h"
 #include "RenderArrays.h"
 #include "animations.h"
@@ -151,8 +153,7 @@ void remove_entity(Entity *arr[], Entity** entt) {
 		
 		if (arr[i] == ent) { /// @note find the element, now resize the list in backwards order ??? aa
 		
-			destroy_entity(arr[i]);		
-			*entt = NULL;
+			destroy_entity(entt);		
 			
 			for (int b = i; b < count_elements(arr); b ++) { // go thru the list setting each element to the element in 
 				arr[b] = arr[b + 1];
@@ -186,12 +187,15 @@ void draw_array(Entity *arr[]) {
 }
 
 void destroy_array(Entity *arr[]) {
-	for (int i = 0; i < sizeof_arr(arr); i ++) {
+	for (int i = 0; i < count_elements(arr); i ++) {
 		if (arr[i] == NULL) {
 			return; // safeguard a null entity ptr
 		}
-		destroy_entity(arr[i]);
-		arr[i] = NULL;
+		
+		fprintf(stderr, "remove size: %d\n", (int) sizeof(arr[i]));
+		
+		//destroy_entity(&arr[i]);
+		//arr[i] = NULL;
 	}
 }
 

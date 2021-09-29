@@ -4,7 +4,7 @@
 #include "RenderWrap.h"
 #include "RenderList.h" 
 #include "RenderArrays.h"
-#include "FontRenderWrap.h"
+#include "Entity.h"
 #include "general.h"
 
 #include "animations.h"
@@ -40,7 +40,7 @@ extern SDL_Renderer* renderer;
 
 SDL_Event event;
 
-SDL_bool is_running = SDL_TRUE;
+SDL_bool is_running = SDL_FALSE;
 
 
 /** @NOTE: function declarations **/
@@ -59,12 +59,15 @@ void update_world_elements(void);
 
 /** @NOTE: Variable declarations **/
 
-Entity* boy;
+Entity *boy;
+
+Entity boy_real;
+
 Entity* pear;
 
 SDL_Point size;
 
-Entity *entity_array[1024]; 
+Entity *entity_array[10];  /// @todo: maybe just make... an entity list haha :raised_eyebrows:
 
 ListElement* entities; /* the entities list, anything that's gonna be interacted with */
 ListElement* background; /* true background layer, will have no interactions with entities at all */
@@ -79,7 +82,7 @@ int main() {
 	
 	if (is_running == SDL_FALSE) {
 		fprintf(stderr, "Warn: is_running is set to false.\n");
-		return(0);
+		//exit(8);
 	}
 
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -93,26 +96,31 @@ int main() {
 		exit(8);
 	}
 
-	SDL_GetWindowSize(window, &size.x, &size.y);
-
 	init_img(renderer);
 	
-	initialise_entities();
+	/*SDL_Drawable dra = *load_image_drawable("images_folder/boy_idle.png");
 	
+	draw_drawable(&dra);*/
+	
+	fill_ent(&boy_real, "boy_idle.png", 0, 0);
+	
+	draw_ent(&boy_real);
+	
+	who_is(&boy_real);
+	
+	SDL_RenderPresent(renderer);
+	
+	SDL_Delay(1000);
+
 	while (is_running) {
 		
-		update_cycle();
+		//update_cycle();
 		
 	}
 
 	SDL_Quit();
 	quit_img();
 	
-	destroy_array(entity_array);
-	
-	/*free_list(entities);
-	free_list(background);*/
-
 	return(0);
 
 }
@@ -131,58 +139,11 @@ void update_cycle(void) {
 		}
 	}
 
-	game_update(); // draw world ents 1st 
-
-	//RenderCopyList(entities);
-	draw_array(entity_array);
-
 	SDL_RenderPresent(renderer);
 
 }
 
 void initialise_entities(void) {
-	
-	//entities = init_list_ent_ptr(create_entity("boy_idle.png", size.x / 2, size.y /2), "boy");
-	//boy = find_element(entities, "boy")->ent_ptr;
-	
-	entity_array[0] = create_entity("boy_idle.png", size.x / 2, size.y /2);
-	boy = entity_array[0]; /// @TODO: error where either memory of an entity isnt freed or this ptr is pointing somewhere idk?? either way :( fix it
-	
-	//add_ent(entities, create_entity("pear.png", 0, 0), "pear");
-	//pear = get_ent(entities, "pear");
-	
-	entity_array[1] = create_entity("pear.png", 0, 0);
-	pear = entity_array[1];
-	
-	//background = init_list_ent_ptr(create_entity("clouds.png", 0, 0), "clouds");
-	
-}
-
-void game_update(void) {
-
-	update_arr(entity_array);
-
-	/*RenderCopyListCenter(background);
-	update_all(entities);
-
-	set_ent_pos(index_ls(background, 0)->ent_ptr, get_x(boy) / 10, get_y(boy) / 10);*/
-
-}
-
-void readouts(void) {
-
-	go_to(0, 0);
-	fprintf(stderr, "*---------------------------------------------*\n");
-	fprintf(stderr, "*- --------world_x: %d -- world_y: %d------- -*\n", world_x, world_y);
-	fprintf(stderr, "*- 				   LISTS		     	  -*\n");
-	fprintf(stderr, "*- entity_list_1: ");
-	print_names(entities);
-	fprintf(stderr, "*---------------------------------------------*\n");
-
-}
-
-void update_world_elements(void) {
-	
 	
 	
 }
@@ -195,59 +156,7 @@ void handle_input(void) {
 			is_running = SDL_FALSE;
 			break;
 			
-		case SDLK_z:
-			move_y(boy, -10);
-			break;
 		
-		case SDLK_s:
-			move_y(boy, 10);
-			break;
-
-		case SDLK_d:
-			//move_x(boy, 10);
-			add_speed(boy, 1.0f);
-			break;
-
-		case SDLK_q:
-			//move_x(boy, -10);
-			add_speed(boy, -1.0f);
-			break;
-			
-		case SDLK_LEFT:
-			add_direction(boy, 0.1f);
-			break;
-			
-		case SDLK_RIGHT:
-			add_direction(boy, -0.1f);
-			break;
-			
-		case SDLK_SPACE:
-			toggle_property(entity_array, DEBUG_DRAWING);
-			change_property(entity_array, YPOS, 105);
-			break;
-			
-		case SDLK_c: /* center */
-			//set_ent_pos(boy, 0, 0);
-			//remove_entity(entity_array, &boy);
-			destroy_array(entity_array);
-			set_all_positions(entity_array, NORMAL, 0, 0);
-			break;
-			
-		case SDLK_u: /* debug */
-			who_is(boy);
-			break;
-
-		case SDLK_t:
-			toggle_property(entity_array, DEBUG_DRAWING);
-			break;
-
-		case SDLK_o:
-			list_ents(entity_array);
-			//lerp(boy, 0, 0, 10);
-			break;
-
-		default:
-			break;
 
 	}
 

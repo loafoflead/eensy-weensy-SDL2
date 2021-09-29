@@ -1,6 +1,7 @@
 #ifndef ANIMATION_H_
 #define ANIMATION_H_ 
 
+#include "Entity.h"
 #include "animations.h"
 #include "RenderWrap.h"
 #include "RenderList.h"
